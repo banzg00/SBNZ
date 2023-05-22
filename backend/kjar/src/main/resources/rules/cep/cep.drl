@@ -1,0 +1,34 @@
+package cep;
+
+import com.ftn.sbnz.model.models.Lake;
+import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
+import com.ftn.sbnz.model.models.Turbine;
+import com.ftn.sbnz.model.events.TurbineOverheatingEvent;
+import com.ftn.sbnz.model.events.DieselGeneratorOnEvent;
+import com.ftn.sbnz.model.events.WaterFlowDecreasedEvent;
+import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
+
+
+rule "Temperature over 25 C"
+    when
+        $l: Lake(waterTemp > 25)
+        not (TurbineOverheatingEvent($l.id == lakeId))
+        $h: HydroelectricPowerPlant()
+    then
+        for (var turbine : $h.getTurbines()) {
+            turbine.setOverheatingDanger(true);
+        }
+        insert(new TurbineOverheatingEvent(lakeId: $l.id));
+        System.out.println("Temperature is over 25 degrees Celsius. Danger of turbine overheating is raised.");
+end
+//
+//rule "2"
+//  when
+//    $u: User($uId: userId, $ip: ip)
+//    Number(intValue > 3) from accumulate(
+//        $t: TimeoutEvent(userId == $uId)
+//        over window:time(5m), count($t)
+//    )
+//  then
+//    System.out.println("ZABRANA");
+//end
