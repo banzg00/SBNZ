@@ -13,4 +13,5 @@ public class Lake {
     private double waterLvl;
     private double waterTemp;
     private double waterSpeed;
+    private double windSpeed;
 }

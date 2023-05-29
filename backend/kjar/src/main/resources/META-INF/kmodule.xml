@@ -2,4 +2,11 @@
     <kbase name="cepKbase" eventProcessingMode="stream" packages="forward_chain">
         <ksession name="cepKsession" clockType="pseudo"/>
     </kbase>
+
+    <kbase name="templateKB" eventProcessingMode="stream" packages="template">
+        <ruleTemplate dtable="rules/template/data.xls"
+                      template="rules/template/water_flow.drt"
+                       col="1" row="2"/>
+        <ksession name="templateKS" clockType="pseudo"/>
+    </kbase>
 </kmodule>
