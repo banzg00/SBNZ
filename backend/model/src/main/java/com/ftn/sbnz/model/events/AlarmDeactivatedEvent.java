@@ -19,7 +19,7 @@ public class AlarmDeactivatedEvent implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    private long hydroPowerPlantId;
+    public long hydroPowerPlantId;
     private Date executionTime;
 
     public AlarmDeactivatedEvent(Long hydroPowerPlantId) {

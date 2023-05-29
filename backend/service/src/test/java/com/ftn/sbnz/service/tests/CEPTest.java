@@ -12,6 +12,8 @@ import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+import com.ftn.sbnz.model.events.AlarmDeactivatedEvent;
+import com.ftn.sbnz.model.events.DecreasedRainEvent;
 import com.ftn.sbnz.model.events.MeasuringEvent;
 import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
 import com.ftn.sbnz.model.models.Lake;
@@ -38,7 +40,7 @@ public class CEPTest {
         Turbine t2 = new Turbine(2, 30, false, 35);
         Turbine t3 = new Turbine(3, 50, false, 39);
 
-        Lake lake = new Lake(1, 20, 30, 20, 40);
+        Lake lake = new Lake(1, 15, 30, 15, 40);
 
         HydroelectricPowerPlant hydroelectricPowerPlant = new HydroelectricPowerPlant(1, 100, lake, Arrays.asList(t1, t2, t3), false, false);
 
@@ -52,14 +54,21 @@ public class CEPTest {
 
         int n = 0;
 
-        for (int i = 0; i < 5; i++) {
-            ksession.insert(new MeasuringEvent(40, 20, 30));
-            clock.advanceTime(10, TimeUnit.MINUTES);
-            n = ksession.fireAllRules();
-        }
+        ksession.insert(new DecreasedRainEvent(1L));
 
-        assertEquals(1, n);
-        assertTrue(t1.getWaterFlow() > 30);
+        for (int i = 0; i < 6; i++) {
+            ksession.insert(new MeasuringEvent(40, 15, 15, 15, 1));
+            clock.advanceTime(1, TimeUnit.MINUTES);
+        }
+        for (int i = 0; i < 6; i++) {
+            ksession.insert(new MeasuringEvent(40, 50, 25, 15, 1));
+            clock.advanceTime(1, TimeUnit.MINUTES);
+        }
+        
+        // ksession.insert(new AlarmDeactivatedEvent(1L));
+        n = ksession.fireAllRules();
+
+        assertEquals(6, n);
 
     }
 }

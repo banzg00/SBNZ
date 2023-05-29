@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Role(Role.Type.EVENT)
 @Timestamp("executionTime")
-public class WaterLevelChangedEvenet implements Serializable {
+public class WaterLevelChangedEvent implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,7 @@ public class WaterLevelChangedEvenet implements Serializable {
     private double waterLevel;
     private Date executionTime;
 
-    public WaterLevelChangedEvenet(Long lakeId, double waterLevel) {
+    public WaterLevelChangedEvent(Long lakeId, double waterLevel) {
         super();
         this.executionTime = new Date();
         this.lakeId = lakeId;
