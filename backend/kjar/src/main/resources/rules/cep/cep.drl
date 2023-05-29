@@ -14,6 +14,8 @@ import com.ftn.sbnz.model.events.DecreasedRainEvent;
 import com.ftn.sbnz.model.events.WaterTemperatureChangedEvent;
 import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
 import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
+import com.ftn.sbnz.model.events.MeasuringEvent;
+import com.ftn.sbnz.model.events.AlarmDeactivatedEvent;
 
 declare ElectricityProductionDecreasedAlarm
     @role(event)
@@ -44,7 +46,7 @@ end
 
 declare SeriousMalfunctionAlarm
     @role(event)
-    lakeId: Long
+    hydroPowerPlantId: Long
 end
 
 declare IncreasedPowerGenerationAlarm
@@ -52,87 +54,86 @@ declare IncreasedPowerGenerationAlarm
     lakeId: Long
 end
 
-rule "Water speed and water level under limit"
+declare StopPowerPlant
+    @role(event)
+    hydroPowerPlantId: Long
+end
+
+rule "#1 Water speed and water level under limit"
+    // timer ( cron:* 0/15 * * * ? )
     when
-        $l1: WaterSpeedChangedEvent($l1Id: lakeId, waterSpeed < 20)
-        Number(intValue < 2) from accumulate(
-            $w: WaterSpeedChangedEvent(lakeId == $l1Id, waterSpeed > 20)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        Number(intValue > 5) from accumulate(
+            $w: WaterSpeedChangedEvent(lakeId == $l1Id, waterSpeed < 20)
             over window:time(30m), count($w)
         )
-        $l: Lake(id == $l1Id, waterLvl < 20)
+        $l.waterLvl < 20
     then
         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Electricity production decreased"));
         System.out.println("Electricity production decreased");
 end
 
-rule "Water temperature and water level under limit"
+rule "#2 Water temperature and water level under limit"
+    // timer ( cron:* 0/15 * * * ? )
     when
-        $l1: WaterTemperatureChangedEvent($l1Id: lakeId, waterTemperature < 20)
-        Number(intValue < 2) from accumulate(
-            $w: WaterTemperatureChangedEvent(lakeId == $l1Id, waterTemperature > 20)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        Number(intValue > 5) from accumulate(
+            $w: WaterTemperatureChangedEvent(lakeId == $l1Id, waterTemperature < 20)
             over window:time(30m), count($w)
         )
-        $l: Lake(id == $l1Id, waterLvl < 20)
+        $l.waterLvl < 20
     then
         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Equipment malfunction"));
         System.out.println("Equipment malfunction");
 end
 
-rule "Decreased rain and water level under limit"
+rule "#3 Decreased rain and water level under limit"
+    // timer ( cron:* 0/15 * * * ? )
     when
-        $l1: DecreasedRainEvent($l1Id: lakeId)
-        Number(intValue == 0) from accumulate(
-            $w: IncreasedRainEvent(lakeId == $l1Id)
-            over window:time(30m), count($w)
-        )
-        $l: Lake(id == $l1Id, waterLvl < 20)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        DecreasedRainEvent(lakeId == $l1Id)
+        $l.waterLvl < 20
     then
         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Electricity production decreased"));
         System.out.println("Electricity production decreased");
 end
 
-rule "Water level high and water speed low"
+rule "#4 Water level high and water speed low"
+    // timer ( cron:* 0/15 * * * ? )
     when
-        $l1: WaterLevelChangedEvent($l1Id: lakeId, waterLevel > 40)
-        Number(intValue < 2) from accumulate(
-            $w: WaterLevelChangedEvent(lakeId == $l1Id, waterLevel < 20)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        Number(intValue > 5) from accumulate(
+            $w: WaterLevelChangedEvent(lakeId == $l1Id, waterLevel > 40)
             over window:time(30m), count($w)
         )
-        $l: Lake(id == $l1Id, waterSpeed < 20)
+        $l.waterSpeed < 20
     then
         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Equipment malfunction"));
         System.out.println("Equipment malfunction");
 end
 
-rule "Increased rain and water level high"
+rule "#5 Increased rain and water level high"
+    // timer ( cron:* 0/15 * * * ? )
     when
-        $l1: IncreasedRainEvent($l1Id: lakeId)
-        Number(intValue == 0) from accumulate(
-            $w: DecreasedRainEvent(lakeId == $l1Id)
-            over window:time(30m), count($w)
-        )
-        $l: Lake(id == $l1Id, waterLevel > 40)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        IncreasedRainEvent(lakeId == $l1Id)
+        $l.waterLvl > 40
     then
         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Water overflow"));
         System.out.println("Water overflow");
 end
 
-// rule "Increased rain and water level doesn't change"
-//     when
-//         $l1: IncreasedRainEvent($l1Id: lakeId)
-//         Number(intValue == 0) from accumulate(
-//             $w: DecreasedRainEvent(lakeId == $l1Id)
-//             over window:time(30m), count($w)
-//         )
-//         $l: Lake(id == $l1Id, waterLevel > 40)
-//     then
-//         insert(new WaterOverflowAlarm(lakeId: $l1Id));
-//         System.out.println("Water overflow");
-// end
-
-rule "In 10 min big water level change"
+rule "#7 In 10 min big water level change"
+    // timer ( cron:* 0/10 * * * ? )
     when
-        $l1: WaterTemperatureChangedEvent($l1Id: lakeId, $waterTemperature: waterTemperature)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        WaterTemperatureChangedEvent(lakeId == $l1Id, $waterTemperature: waterTemperature)
         from accumulate(
             $w: WaterTemperatureChangedEvent(lakeId == $l1Id, waterTemperature < $waterTemperature - 10 || waterTemperature > $waterTemperature + 10)
             over window:time(10m), count($w)
@@ -143,22 +144,27 @@ rule "In 10 min big water level change"
 end
 
 
-rule "Water speed fast and water level high, increased generation"
+rule "#8 Water speed fast and water level high, increased generation"
+    // timer ( cron:* 0/10 * * * ? )
     when
-        $l1: WaterSpeedChangedEvent($l1Id: lakeId, waterSpeed > 40)
-        Number(intValue < 2) from accumulate(
-            $w: WaterSpeedChangedEvent(lakeId == $l1Id, waterSpeed < 20)
-            over window:time(10m), count($w)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        Number(intValue > 5) from accumulate(
+            $w: WaterSpeedChangedEvent(lakeId == $l1Id, waterSpeed > 40)
+            over window:time(30m), count($w)
         )
-        $l: Lake(id == $l1Id, waterLevel > 40)
+        $l.waterLvl > 40
     then
         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Increased power generation"));
         System.out.println("Increased power generation");
 end
 
-rule "Big change in water level in last 15min"
+rule "#10 Big change in water level in last 15min"
+    // timer ( cron:* 0/15 * * * ? )
     when
-        $l1: WaterLevelChangedEvent($l1Id: lakeId, $waterLevel: waterLevel)
+        $h: HydroelectricPowerPlant()
+        $l: Lake($l1Id: id)
+        WaterLevelChangedEvent(lakeId == $l1Id, $waterLevel: waterLevel)
         from accumulate(
             $w: WaterLevelChangedEvent(lakeId == $l1Id, waterLevel < $waterLevel - 15 || waterLevel > $waterLevel + 15)
             over window:time(15m), count($w)
@@ -169,11 +175,83 @@ rule "Big change in water level in last 15min"
 end
 
 rule "More than 3 of any of alarms fired in last 30min"
-    Alarm($lId: lakeId)
-    Number(intValue > 3) from accumulate(
-        $a: Alarm(lakeId == $lId)
-        over window:time(30m), count($a)
-    )
+    // timer ( cron:* 0/15 * * * ? )
+    when
+        Alarm($lId: lakeId)
+        Number(intValue > 3) from accumulate(
+            $a: Alarm(lakeId == $lId)
+            over window:time(1m), count($a)
+        )
     then
-        insert(new SeriousMalfunctionAlarm());
+        insert(new SeriousMalfunctionAlarm(powerPlantId = ));
         System.out.println("Serious malfunction");
+end
+
+rule "Serious alarm is not resolved"
+    when
+        $a: SeriousMalfunctionAlarm()
+        not from accumulate(
+            AlarmDeactivatedEvent(hydroPowerPlantId == $a.hydroPowerPlantId)
+            over window:time(1m), count(1)
+        )
+    then
+        insert(new StopPowerPlant(hydroPowerPlantId = $a.hydroPowerPlantId));
+        System.out.println("Serious malfunction");
+end
+
+rule "Temperature over 25 C"
+    when
+        $l: Lake(waterTemp > 25)
+        not (TurbineOverheatingEvent($l.id == lakeId))
+        $h: HydroelectricPowerPlant()
+    then
+        for (var turbine : $h.getTurbines()) {
+            turbine.setOverheatingDanger(true);
+        }
+        insert(new TurbineOverheatingEvent(lakeId: $l.id));
+        System.out.println("Temperature is over 25 degrees Celsius. Danger of turbine overheating is raised.");
+end
+
+rule "Adjust water flow_5"
+no-loop true
+when
+    $h: HydroelectricPowerPlant()
+    $l: Lake()
+    Number(intValue >= 5) from accumulate(
+        $me: MeasuringEvent(windSpeed > 50,
+                windSpeed <= 250,
+                waterLvl > 70,
+                waterLvl <= 100,
+                waterTemp > 20,
+                waterTemp <= 99)
+        over window:time(60m), count($me)
+    )
+
+then
+    for (Turbine t : $h.getTurbines()) {
+        t.setWaterFlow(t.getWaterFlow() * action);
+    }
+    System.out.println("Water flow in turbines adjusted.");
+end
+
+//rule "2"
+//  when
+//    $u: User($uId: userId, $ip: ip)
+//    Number(intValue > 3) from accumulate(
+//        $t: TimeoutEvent(userId == $uId)
+//        over window:time(5m), count($t)
+//    )
+//  then
+//    System.out.println("ZABRANA");
+//end
+//
+//rule "3"
+//  when
+//    $l: Lake()
+//    Number(intValue > 5) from accumulate(
+//        $t: TimeoutEvent(userId == $uId)
+//        over window:time(60m), count($t)
+//    )
+//  then
+//    System.out.println("ZABRANA");
+//end

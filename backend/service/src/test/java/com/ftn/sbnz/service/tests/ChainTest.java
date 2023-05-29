@@ -25,7 +25,7 @@ public class ChainTest {
         Turbine t2 = new Turbine(2, 30, false, 35);
         Turbine t3 = new Turbine(3, 50, false, 39);
 
-        Lake lake = new Lake(1, 80, 30, 20);
+        Lake lake = new Lake(1, 80, 30, 20, 40);
 
         HydroelectricPowerPlant hydroelectricPowerPlant = new HydroelectricPowerPlant(1, 100, lake, Arrays.asList(t1, t2, t3), false, false);
 
@@ -51,7 +51,7 @@ public class ChainTest {
         Turbine t2 = new Turbine(2, 30, false, 35);
         Turbine t3 = new Turbine(3, 50, false, 39);
 
-        Lake lake = new Lake(1, 90, 15, 20);
+        Lake lake = new Lake(1, 90, 15, 20, 40);
 
         HydroelectricPowerPlant hydroelectricPowerPlant = new HydroelectricPowerPlant(1, 100, lake, Arrays.asList(t1, t2, t3), false, false);
 
