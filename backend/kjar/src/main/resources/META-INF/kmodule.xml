@@ -9,4 +9,8 @@
                        col="1" row="2"/>
         <ksession name="templateKS" clockType="pseudo"/>
     </kbase>
+
+    <kbase name="CEPKB" eventProcessingMode="stream" packages="cep">
+        <ksession name="CEPKS" clockType="pseudo"/>
+    </kbase>
 </kmodule>

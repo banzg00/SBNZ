@@ -75,7 +75,7 @@ public class TemplateTest {
         int n = 0;
 
         for (int i = 0; i < 5; i++) {
-            ksession.insert(new MeasuringEvent(40, 20, 30));
+            ksession.insert(new MeasuringEvent(40, 20, 30, 20, 1));
             clock.advanceTime(10, TimeUnit.MINUTES);
             n = ksession.fireAllRules();
         }

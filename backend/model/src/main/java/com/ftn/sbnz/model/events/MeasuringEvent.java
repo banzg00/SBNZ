@@ -18,5 +18,8 @@ public class MeasuringEvent implements Serializable {
     private double windSpeed;
     private double waterLvl;
     private double waterTemp;
+    private double waterSpeed;
+    private int lakeId;
+
 
 }
