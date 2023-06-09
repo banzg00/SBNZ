@@ -1,0 +1,41 @@
+template header
+minWindSpeed
+maxWindSpeed
+minWaterLvl
+maxWaterLvl
+minWaterTemp
+maxWaterTemp
+action
+
+package template;
+
+import com.ftn.sbnz.model.models.Lake;
+import com.ftn.sbnz.model.models.Turbine;
+import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
+import com.ftn.sbnz.model.events.MeasuringEvent;
+
+template "water_flow"
+
+rule "Adjust water flow_@{row.rowNumber}"
+no-loop true
+when
+    $h: HydroelectricPowerPlant()
+    $l: Lake()
+    Number(intValue >= 5) from accumulate(
+        $me: MeasuringEvent(windSpeed > @{minWindSpeed},
+                windSpeed <= @{maxWindSpeed},
+                waterLvl > @{minWaterLvl},
+                waterLvl <= @{maxWaterLvl},
+                waterTemp > @{minWaterTemp},
+                waterTemp <= @{maxWaterTemp})
+        over window:time(60m), count($me)
+    )
+then
+    for (Turbine t : $h.getTurbines()) {
+        t.setWaterFlow(t.getWaterFlow() * @{action});
+    }
+
+    System.out.println("Water flow in turbines adjusted.");
+end
+
+end template

@@ -7,6 +7,7 @@ import com.ftn.sbnz.model.events.TurbineOverheatingEvent;
 import com.ftn.sbnz.model.events.DieselGeneratorOnEvent;
 import com.ftn.sbnz.model.events.WaterFlowDecreasedEvent;
 import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
+import com.ftn.sbnz.model.events.MeasuringEvent;
 
 
 rule "Temperature over 25 C"
@@ -21,13 +22,46 @@ rule "Temperature over 25 C"
         insert(new TurbineOverheatingEvent(lakeId: $l.id));
         System.out.println("Temperature is over 25 degrees Celsius. Danger of turbine overheating is raised.");
 end
-//
+
+rule "Adjust water flow_5"
+no-loop true
+when
+    $h: HydroelectricPowerPlant()
+    $l: Lake()
+    Number(intValue >= 5) from accumulate(
+        $me: MeasuringEvent(windSpeed > 50,
+                windSpeed <= 250,
+                waterLvl > 70,
+                waterLvl <= 100,
+                waterTemp > 20,
+                waterTemp <= 99)
+        over window:time(60m), count($me)
+    )
+
+then
+    for (Turbine t : $h.getTurbines()) {
+        t.setWaterFlow(t.getWaterFlow() * action);
+    }
+    System.out.println("Water flow in turbines adjusted.");
+end
+
 //rule "2"
 //  when
 //    $u: User($uId: userId, $ip: ip)
 //    Number(intValue > 3) from accumulate(
 //        $t: TimeoutEvent(userId == $uId)
 //        over window:time(5m), count($t)
+//    )
+//  then
+//    System.out.println("ZABRANA");
+//end
+//
+//rule "3"
+//  when
+//    $l: Lake()
+//    Number(intValue > 5) from accumulate(
+//        $t: TimeoutEvent(userId == $uId)
+//        over window:time(60m), count($t)
 //    )
 //  then
 //    System.out.println("ZABRANA");
