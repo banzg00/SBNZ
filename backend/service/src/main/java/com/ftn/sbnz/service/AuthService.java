@@ -1,23 +1,20 @@
 package com.ftn.sbnz.service;
 
-import com.ftn.sbnz.model.Manager;
+import com.ftn.sbnz.model.models.Manager;
 import com.ftn.sbnz.dto.LoginDTO;
+import com.ftn.sbnz.repository.ManagerRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-//@AllArgsConstructor
+@AllArgsConstructor
 public class AuthService {
 
-//    @Autowired
-//    private ManagerRepository managerRepo;
+    private ManagerRepository managerRepo;
 
-    private Manager getManager(String username, String password) {
-//        Optional<Manager> managerOptional = managerRepo.findByUsernameAndPassword(username, password);
-        return null;
-    }
 
     public String login(LoginDTO dto) {
-        Manager manager = this.getManager(dto.getUsername(), dto.getPassword());
+        Manager manager = managerRepo.findByUsernameAndPassword(dto.getUsername(), dto.getPassword());
         return manager == null ? null : String.format("x%s&%sx", dto.getUsername(), dto.getPassword());
     }
 

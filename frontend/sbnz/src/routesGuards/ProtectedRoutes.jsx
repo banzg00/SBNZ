@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
+import authService from "../services/authService";
 
 const useAuth = () => {
-    return false;
+    return authService.getToken() !== null && authService.getToken() !== undefined;
 }
 
 const ProtectedRoutes = () => {

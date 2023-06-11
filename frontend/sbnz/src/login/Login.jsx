@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import {useNavigate} from "react-router-dom";
+import authService from '../services/authService';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
@@ -14,7 +18,14 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Perform login logic here
+    authService.login({username, password})
+        .then(res => {
+            authService.setToken(res.data);
+            navigate("/home");
+        })
+        .catch(() => {
+            setError('Invalid username or password');
+        });
   };
 
   return (
@@ -51,8 +62,13 @@ const Login = () => {
               value={password}
               onChange={handlePasswordChange}
               required
-            />
+              />
           </div>
+              {error && (
+                <div className="mb-4 text-red-500 flex items-center justify-center">
+                  <p>{error}</p>
+                </div>
+              )}
           <div className="flex items-center justify-center">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

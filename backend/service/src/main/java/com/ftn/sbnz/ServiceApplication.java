@@ -1,17 +1,14 @@
-package com.ftn.sbnz.service;
+package com.ftn.sbnz;
 
-import java.util.Arrays;
+import java.util.List;
 
-import org.springframework.context.ApplicationContext;
+import com.ftn.sbnz.model.models.Manager;
 import org.springframework.context.annotation.Bean;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieScanner;
 import org.kie.api.runtime.KieContainer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
 public class ServiceApplication  {
@@ -20,16 +17,8 @@ public class ServiceApplication  {
 		SpringApplication.run(ServiceApplication.class, args);
 	}
 
-	@Bean
-	public KieContainer kieContainer() {
-		KieServices ks = KieServices.Factory.get();
-		KieContainer kContainer = ks
-				.newKieContainer(ks.newReleaseId("com.ftn.sbnz", "kjar", "0.0.1-SNAPSHOT"));
-		KieScanner kScanner = ks.newKieScanner(kContainer);
-		kScanner.start(1000);
-		return kContainer;
-	}
-	
+
+
 	/*
 	 * KieServices ks = KieServices.Factory.get(); KieContainer kContainer =
 	 * ks.newKieContainer(ks.newReleaseId("drools-spring-v2",

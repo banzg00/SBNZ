@@ -1,11 +1,28 @@
 package com.ftn.sbnz.repository;
 
-import com.ftn.sbnz.model.Manager;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ftn.sbnz.model.models.Manager;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface ManagerRepository extends JpaRepository<Manager, Long> {
+@Component
+@NoArgsConstructor
+public class ManagerRepository {
 
-    Optional<Manager> findByUsernameAndPassword(String username, String password);
+    private List<Manager> managers;
+
+    @Autowired
+    public ManagerRepository(List<Manager> managers) {
+        this.managers = managers;
+    }
+
+    public Manager findByUsernameAndPassword(String username, String password) {
+        return managers.stream()
+                .filter(manager -> manager.getUsername().equals(username) && manager.getPassword().equals(password))
+                .findFirst()
+                .orElse(null);
+    }
 }
