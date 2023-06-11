@@ -12,7 +12,6 @@ import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
-import com.ftn.sbnz.model.events.AlarmDeactivatedEvent;
 import com.ftn.sbnz.model.events.DecreasedRainEvent;
 import com.ftn.sbnz.model.events.MeasuringEvent;
 import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
