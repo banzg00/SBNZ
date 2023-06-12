@@ -18,7 +18,7 @@ public class WSController {
     private final SimpMessagingTemplate template;
 
     @Autowired
-    WSController(SimpMessagingTemplate template) {
+    public WSController(SimpMessagingTemplate template) {
         this.template = template;
     }
 
