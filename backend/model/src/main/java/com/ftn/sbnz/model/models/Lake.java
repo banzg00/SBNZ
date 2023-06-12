@@ -14,4 +14,8 @@ public class Lake {
     private double waterTemp;
     private double waterSpeed;
     private double windSpeed;
+
+    public Lake(long id) {
+        this.id = id;
+    }
 }

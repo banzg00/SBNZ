@@ -17,4 +17,10 @@ public class HydroelectricPowerPlant {
     private List<Turbine> turbines;
     private boolean generatorsOn;
     private boolean valvesOpened;
+
+    public HydroelectricPowerPlant(long id, Lake lake, List<Turbine> turbines) {
+        this.id = id;
+        this.lake = lake;
+        this.turbines = turbines;
+    }
 }

@@ -13,4 +13,8 @@ public class Turbine {
     private double waterFlow;   // m3/s
     private boolean overheatingDanger;
     private double pressure;    // 0 - 100
+
+    public Turbine(long id) {
+        this.id = id;
+    }
 }
