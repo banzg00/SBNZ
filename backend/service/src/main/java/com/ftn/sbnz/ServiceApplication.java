@@ -1,4 +1,4 @@
-package com.ftn.sbnz.service;
+package com.ftn.sbnz;
 
 import java.util.Arrays;
 
@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
 public class ServiceApplication  {

@@ -1,12 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Measurements from "../components/Measurements";
 import Alarms from "../components/Alarms";
 import PopupModal from "../components/PopupModal";
+import SockJsClient from "react-stomp";
+
+const SOCKET_URL = "http://localhost:8080/ws";
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [message, setMessage] = useState("You server message here.");
 
+  var clientRef;
+
+  let onConnected = () => {
+    console.log("Connected!!");
+  };
+
+  let onMessageReceived = (msg) => {
+    console.log(msg);
+  };
+
+  useEffect(() => {
+    console.log("componentDidMount");
+  });
+
+  function sendMess() {
+    this.clientRef.sendMessage("/app/alarm", message);
+  }
   const openModal = () => {
     setModalOpen(true);
   };
@@ -78,12 +99,22 @@ const Home = () => {
 
   return (
     <div>
+      <SockJsClient
+        url={SOCKET_URL}
+        topics={["/topic/public"]}
+        onConnect={onConnected}
+        onDisconnect={console.log("Disconnected!")}
+        onMessage={(msg) => onMessageReceived(msg)}
+        debug={false}
+        ref={(client) => (this.clientRef = client)}
+      />
       <PopupModal
         isOpen={modalOpen}
         onClose={closeModal}
         description={lastAlarm().description}
       />
       <NavBar />
+      <button onClick={sendMess}>Open modal</button>
       <div className="mx-auto mt-8 ">
         <div className="grid grid-rows-2 gap-4 mt-14 ">
           <div className="mx-auto ">

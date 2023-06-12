@@ -43,38 +43,6 @@ function Measurements() {
       windSpeed: 50,
       electricityGenerated: 1200,
     },
-    {
-      id: 3,
-      waterSpeed: 160,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 45,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 4,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 3,
-      waterSpeed: 160,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 45,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 4,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
   ];
 
   function currentMeasurement() {
