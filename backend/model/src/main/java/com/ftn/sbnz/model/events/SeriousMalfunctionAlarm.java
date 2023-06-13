@@ -14,19 +14,15 @@ import java.util.Date;
 @AllArgsConstructor
 @Role(Role.Type.EVENT)
 @Timestamp("executionTime")
-public class Alarm implements Serializable {
+public class SeriousMalfunctionAlarm implements Serializable {
 
     private static final long serialVersionUID = 1L;
     public long hydroPowerPlantId;
-    public String reason;
     private Date executionTime;
-    private String severity;
 
-    public Alarm(long hydroPowerPlantId, String reason, String severity) {
+    public SeriousMalfunctionAlarm(long hydroPowerPlantId) {
         super();
         this.executionTime = new Date();
         this.hydroPowerPlantId = hydroPowerPlantId;
-        this.reason = reason;
-        this.severity = severity;
     }
 }

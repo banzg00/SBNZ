@@ -6,6 +6,10 @@ class AlarmService {
   getAlarms() {
     return axios.get(API_URL + "/all");
   }
+
+  alarmResolved() {
+    axios.get(API_URL + "/resolved");
+  }
 }
 
 export default new AlarmService();

@@ -18,11 +18,7 @@ import com.ftn.sbnz.model.events.MeasuringEvent;
 import com.ftn.sbnz.model.events.AlarmDeactivatedEvent;
 import com.ftn.sbnz.model.events.Alarm;
 import com.ftn.sbnz.service.AlarmService;
-
-declare SeriousMalfunctionAlarm
-    @role(event)
-    hydroPowerPlantId: Long
-end
+import com.ftn.sbnz.model.events.SeriousMalfunctionAlarm;
 
 declare IncreasedPowerGenerationAlarm
     @role(event)
@@ -42,8 +38,9 @@ rule "#1 Water speed and water level under limit"
             $w: MeasuringEvent(lakeId == $l1Id, waterSpeed < 40, waterLvl < 40)
             over window:time(30m), count($w)
         )
+        (not Alarm(reason == "Electricity production decreased", hydroPowerPlantId == $hppId))
     then
-        insert(new Alarm($hppId, "Electricity production decreased"));
+        insert(new Alarm($hppId, "Electricity production decreased", "medium"));
         AlarmService.addAlarm("Electricity production decreased", "medium");
         System.out.println("Electricity production decreased");
 end
@@ -56,10 +53,11 @@ rule "#2 Water temperature and water level under limit"
             $w: MeasuringEvent(lakeId == $l1Id, waterTemp < 40, waterLvl < 40)
             over window:time(30m), count($w)
         )
+        (not Alarm(reason == "Equipment malfunction due temperature", hydroPowerPlantId == $hppId))
     then
-        insert(new Alarm($hppId, "Equipment malfunction"));
-        AlarmService.addAlarm("Equipment malfunction", "medium");
-        System.out.println("Equipment malfunction");
+        insert(new Alarm($hppId, "Equipment malfunction due temperature", "medium"));
+        AlarmService.addAlarm("Equipment malfunction due temperature", "medium");
+        System.out.println("Equipment malfunction due temperature");
 end
 
 rule "#3 Decreased rain and water level under limit"
@@ -67,10 +65,11 @@ rule "#3 Decreased rain and water level under limit"
         $l: Lake($l1Id: id, waterLvl < 20)
         $h: HydroelectricPowerPlant($hppId: id)
         DecreasedRainEvent(lakeId == $l1Id)
+        (not Alarm(reason == "Electricity production decreased due rain", hydroPowerPlantId == $hppId))
     then
-        insert(new Alarm($hppId, "Electricity production decreased"));
-        AlarmService.addAlarm("Electricity production decreased", "medium");
-        System.out.println("Electricity production decreased");
+        insert(new Alarm($hppId, "Electricity production decreased due rain", "medium"));
+        AlarmService.addAlarm("Electricity production decreased due rain", "medium");
+        System.out.println("Electricity production decreased due rain");
 end
 
 rule "#4 Water level high and water speed low"
@@ -81,8 +80,9 @@ rule "#4 Water level high and water speed low"
             $w: MeasuringEvent(lakeId == $l1Id, waterLvl > 40, waterSpeed < 20)
             over window:time(30m), count($w)
         )
+        (not Alarm(reason == "Equipment malfunction", hydroPowerPlantId == $hppId))
     then
-        insert(new Alarm($hppId, "Equipment malfunction"));
+        insert(new Alarm($hppId, "Equipment malfunction", "medium"));
         AlarmService.addAlarm("Equipment malfunction", "medium");
         System.out.println("Equipment malfunction");
 end
@@ -146,12 +146,12 @@ end
 rule "More than 3 of any of alarms fired in last 30min"
 no-loop true
     when
-        Alarm($ppId: hydroPowerPlantId)
-        Number(intValue > 3) from accumulate(
+        Alarm($ppId: hydroPowerPlantId, severity == "medium")
+        Number(intValue == 3) from accumulate(
             $al: Alarm(hydroPowerPlantId == $ppId)
             over window:time(30m), count($al)
         )
-        not (SeriousMalfunctionAlarm(hydroPowerPlantId == $ppId))
+        (not SeriousMalfunctionAlarm(hydroPowerPlantId == $ppId))
     then
         insert(new SeriousMalfunctionAlarm($ppId));
         AlarmService.addAlarm("Serious malfunction", "high");
@@ -166,9 +166,22 @@ no-loop true
             $al: AlarmDeactivatedEvent(hydroPowerPlantId == $hppId)
             over window:time(1m), count($al)
         )
+        not (StopPowerPlant(hydroPowerPlantId == $hppId))
     then
         insert(new StopPowerPlant($hppId));
-        System.out.println("Serious malfunction");
+        System.out.println("Serious alarm not resolved");
+end
+
+rule "Serious alarm resolved"
+no-loop true
+    when
+        $sa: SeriousMalfunctionAlarm($hppId: hydroPowerPlantId)
+        AlarmDeactivatedEvent(hydroPowerPlantId == $hppId)
+        (not Alarm(reason == "Alarm resolved", hydroPowerPlantId == $hppId, severity == "low"))
+    then
+        insert(new Alarm($hppId, "Alarm resolved", "low"));
+        AlarmService.addAlarm("Alarm resolved", "low");
+        System.out.println("Alarm resolved");
 end
 
 // rule "Temperature over 25 C"

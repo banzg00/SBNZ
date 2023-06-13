@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 function Alarms(props) {
+  let alarms = [...props.alarms].reverse();
   function alarmColor(severity) {
     switch (severity) {
       case "high":
@@ -18,7 +19,7 @@ function Alarms(props) {
         Alarms
       </h2>
       <ul className="flex flex-col p-4 overflow-y-scroll max-h-[400px] w-[800px] mx-auto">
-        {props.alarms.map((alarm) => (
+        {alarms.map((alarm) => (
           <li className="border-gray-400 flex flex-row mb-2" key={alarm.id}>
             <div
               className={

@@ -77,6 +77,7 @@ const Home = () => {
 
   const closeModal = () => {
     setModalOpen(false);
+    alarmService.alarmResolved();
   };
 
   function lastMeasurement() {

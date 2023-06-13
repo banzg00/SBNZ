@@ -5,7 +5,7 @@ import { FaWind, FaWater, FaTemperatureHigh, FaBolt } from "react-icons/fa";
 import { TbEngine } from "react-icons/tb";
 
 function Measurements(props) {
-  const totalTurbines = 5;
+  const totalTurbines = 3;
 
   let [showMeasurements, setShowMeasurements] = useState(false);
 
