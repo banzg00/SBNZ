@@ -31,7 +31,9 @@ function Alarms(props) {
                   <div className="font-medium">{alarm.description}</div>
                 </div>
                 <div className="dmr-10">
-                  <div className="font-medium">Time: {alarm.time}</div>
+                  <div className="font-medium">
+                    Time: {alarm.time.slice(0, 8)}
+                  </div>
                 </div>
               </div>
             </div>

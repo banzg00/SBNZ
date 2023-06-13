@@ -24,9 +24,11 @@ const Home = () => {
   const [turbines, setTurbines] = useState([1]);
 
   useEffect(() => {
-    // alarmService.getAlarms().then((response) => {
-    //   setAlarms(response.data);
-    // });
+    alarmService.getAlarms().then((response) => {
+      console.log(response);
+      let i = 1;
+      setAlarms(response.data);
+    });
     measurementService.getMeasurements().then((response) => {
       let i = 1;
       response.data.forEach((measurement) => {
@@ -37,18 +39,21 @@ const Home = () => {
     });
   }, []);
 
-  useSubscription("/topic/alarms", (message) => onAlarm(message));
+  useSubscription("/topic/alarm", (message) => onAlarm(message));
   useSubscription("/topic/measurement", (message) => onMeasurement(message));
 
   const onAlarm = (message) => {
     const messageData = JSON.parse(message.body);
     let alarm = {
       id: alarms.length + 1,
-      description: messageData.messages[0],
-      time: messageData.sentTime.slice(0, 8),
-      severity: messageData.messages[1],
+      description: messageData.description,
+      time: messageData.time.slice(0, 8),
+      severity: messageData.severity,
     };
     setAlarms((alarms) => [...alarms, alarm]);
+    if (messageData.severity === "high") {
+      openModal();
+    }
   };
 
   const onMeasurement = (message) => {

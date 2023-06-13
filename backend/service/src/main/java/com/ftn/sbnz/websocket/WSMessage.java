@@ -13,7 +13,9 @@ public class WSMessage {
     @Getter
     private MessageType type;
     @Getter
-    private List<String> messages;
+    private String description;
     @Getter
-    private LocalTime sentTime;
+    private String severity;
+    @Getter
+    private LocalTime time;
 }

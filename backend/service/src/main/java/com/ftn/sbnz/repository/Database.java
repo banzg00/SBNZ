@@ -1,5 +1,6 @@
 package com.ftn.sbnz.repository;
 
+import com.ftn.sbnz.dto.AlarmDTO;
 import com.ftn.sbnz.dto.MeasurementDTO;
 import com.ftn.sbnz.model.events.MeasuringEvent;
 import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,14 +23,13 @@ import java.util.List;
 @Setter
 @Component
 public class Database {
-
     private List<Manager> managers;
     private List<Turbine> turbines;
     private Lake lake;
     private HydroelectricPowerPlant hydroelectricPowerPlant;
-
-    private List<String> alarms;
+    private List<AlarmDTO> alarms = new ArrayList<>();
     private List<MeasurementDTO> meassurements = new ArrayList<>();
+    private List<MeasuringEvent> measuringEvents = new ArrayList<>();
 
     public Database() {
         this.managers = List.of(new Manager("admin", "admin", "admin", "admin"));
@@ -57,5 +58,9 @@ public class Database {
                 .filter(manager -> manager.getUsername().equals(username) && manager.getPassword().equals(password))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void addAlarm(String description, String severity, LocalTime time) {
+        this.alarms.add(new AlarmDTO(description, severity, time));
     }
 }

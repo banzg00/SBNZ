@@ -40,6 +40,7 @@ public class MeasurementController {
         measurement.setTurbines(database.getHydroelectricPowerPlant().getActiveTurbines());
         database.getMeassurements().add(measurement);
         rulesService.fireChainRules(measurement);
+        rulesService.fireCEPRules(measurement);
         WSMeasurement newMessage = WSMeasurement.builder()
                 .waterLvl(measurement.getWaterLvl())
                 .waterTemp(measurement.getWaterTemp())

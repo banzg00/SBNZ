@@ -14,25 +14,17 @@ import java.util.Date;
 @AllArgsConstructor
 @Role(Role.Type.EVENT)
 @Timestamp("executionTime")
-public class MeasuringEvent implements Serializable {
+public class Alarm implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private double windSpeed;
-    private double waterLvl;
-    private double waterTemp;
-    private double waterSpeed;
-    private long lakeId;
-
+    public long hydroPowerPlantId;
+    public String reason;
     private Date executionTime;
 
-    public MeasuringEvent(double windSpeed, double waterSpeed, double waterTemp, double waterLvl, long lakeId) {
+    public Alarm(long hydroPowerPlantId, String reason) {
         super();
         this.executionTime = new Date();
-        this.windSpeed = windSpeed;
-        this.waterLvl = waterLvl;
-        this.waterTemp = waterTemp;
-        this.waterSpeed = waterSpeed;
-        this.lakeId = lakeId;
+        this.hydroPowerPlantId = hydroPowerPlantId;
+        this.reason = reason;
     }
 }
