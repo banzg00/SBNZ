@@ -8,10 +8,7 @@ import com.ftn.sbnz.model.models.Lake;
 import com.ftn.sbnz.model.models.Manager;
 import com.ftn.sbnz.model.models.Turbine;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -28,7 +25,7 @@ public class Database {
     private Lake lake;
     private HydroelectricPowerPlant hydroelectricPowerPlant;
     private List<AlarmDTO> alarms = new ArrayList<>();
-    private List<MeasurementDTO> meassurements = new ArrayList<>();
+    private List<MeasurementDTO> measurements = new ArrayList<>();
     private List<MeasuringEvent> measuringEvents = new ArrayList<>();
     public static boolean appWorking = true;
 
@@ -40,9 +37,9 @@ public class Database {
     }
 
     private List<Turbine> turbines() {
-        Turbine t1 = new Turbine(1, true);
-        Turbine t2 = new Turbine(2, false);
-        Turbine t3 = new Turbine(3, false);
+        Turbine t1 = new Turbine(1, 100, true);
+        Turbine t2 = new Turbine(2, 100, false);
+        Turbine t3 = new Turbine(3, 100, false);
 
         // TODO: MILADIN
         // Turbine t1 = new Turbine(1, 0.5, false, 0, true);

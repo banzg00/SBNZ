@@ -3,9 +3,7 @@ package com.ftn.sbnz.controller;
 import com.ftn.sbnz.dto.MeasurementDTO;
 import com.ftn.sbnz.repository.Database;
 import com.ftn.sbnz.service.RulesService;
-import com.ftn.sbnz.websocket.MessageType;
 import com.ftn.sbnz.websocket.WSMeasurement;
-import com.ftn.sbnz.websocket.WSMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @Controller
@@ -24,12 +21,11 @@ import java.util.List;
 public class MeasurementController {
     private final RulesService rulesService;
     private final SimpMessagingTemplate template;
+    private final Database database;
 
     @Autowired
-    private Database database;
-
-    @Autowired
-    public MeasurementController(RulesService rulesService, SimpMessagingTemplate template) {
+    public MeasurementController(Database database, RulesService rulesService, SimpMessagingTemplate template) {
+        this.database = database;
         this.rulesService = rulesService;
         this.template = template;
     }
@@ -41,9 +37,10 @@ public class MeasurementController {
         }
         measurement.setElectricityGenerated(database.getHydroelectricPowerPlant().getPowerGenerated());
         measurement.setTurbines(database.getHydroelectricPowerPlant().getActiveTurbines());
-        database.getMeassurements().add(measurement);
+        database.getMeasurements().add(measurement);
         rulesService.fireChainRules(measurement);
         rulesService.fireCEPRules(measurement);
+        rulesService.fireTemplateRules(measurement);
         WSMeasurement newMessage = WSMeasurement.builder()
                 .waterLvl(measurement.getWaterLvl())
                 .waterTemp(measurement.getWaterTemp())
@@ -58,6 +55,6 @@ public class MeasurementController {
 
     @GetMapping("/measurements/all")
     public ResponseEntity<List<MeasurementDTO>> getMeasurements() {
-        return ResponseEntity.ok(database.getMeassurements());
+        return ResponseEntity.ok(database.getMeasurements());
     }
 }

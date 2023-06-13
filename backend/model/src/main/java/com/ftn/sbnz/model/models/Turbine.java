@@ -11,17 +11,10 @@ public class Turbine {
 
     private long id;
     private double waterFlow;   // m3/s
-    private boolean overheatingDanger;
-    private double pressure;    // 0 - 100
     private boolean on;
 
-    public Turbine(long id, boolean on) {
-        this.id = id;
-        this.on = on;
-    }
-
-    public double getpowerGenerated() {
-        return waterFlow * 100;
+    public double getPowerGenerated() {
+        return waterFlow * 10 * Math.PI / Math.sqrt(5);
     }
 
 }
