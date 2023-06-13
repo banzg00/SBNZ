@@ -11,6 +11,6 @@
     </kbase>
 
     <kbase name="CEPKB" eventProcessingMode="stream" packages="cep">
-        <ksession name="CEPKS" clockType="pseudo"/>
+        <ksession name="CEPKS"/>
     </kbase>
 </kmodule>

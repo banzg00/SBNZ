@@ -3,6 +3,7 @@ package com.ftn.sbnz.model.events;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.kie.api.definition.type.Expires;
 import org.kie.api.definition.type.Role;
 import org.kie.api.definition.type.Timestamp;
 
