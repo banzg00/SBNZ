@@ -36,6 +36,9 @@ public class MeasurementController {
 
     @PostMapping("/measurements")
     public ResponseEntity<?> getMeasurements(@RequestBody MeasurementDTO measurement) {
+        if (!Database.appWorking) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         measurement.setElectricityGenerated(database.getHydroelectricPowerPlant().getPowerGenerated());
         measurement.setTurbines(database.getHydroelectricPowerPlant().getActiveTurbines());
         database.getMeassurements().add(measurement);

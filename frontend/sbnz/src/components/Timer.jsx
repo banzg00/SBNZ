@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 
-const Timer = () => {
+const Timer = (props) => {
   // We need ref in this, because we are dealing
   // with JS setInterval to keep track of it and
   // stop it when needed
@@ -71,6 +71,12 @@ const Timer = () => {
   useEffect(() => {
     clearTimer(getDeadTime());
   }, []);
+
+  useEffect(() => {
+    if (timer === "00:00:00") {
+      props.stopPowerPlant();
+    }
+  }, timer);
 
   // Another way to call the clearTimer() to start
   // the countdown is via action event from the

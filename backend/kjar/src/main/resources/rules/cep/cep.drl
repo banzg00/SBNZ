@@ -20,6 +20,7 @@ import com.ftn.sbnz.model.events.AlarmNotDeactivated;
 import com.ftn.sbnz.model.events.Alarm;
 import com.ftn.sbnz.service.AlarmService;
 import com.ftn.sbnz.model.events.SeriousMalfunctionAlarm;
+import com.ftn.sbnz.repository.Database;
 
 declare IncreasedPowerGenerationAlarm
     @role(event)
@@ -61,24 +62,12 @@ rule "#2 Water temperature and water level under limit"
         System.out.println("Equipment malfunction due temperature");
 end
 
-rule "#3 Decreased rain and water level under limit"
-    when
-        $l: Lake($l1Id: id, waterLvl < 20)
-        $h: HydroelectricPowerPlant($hppId: id)
-        DecreasedRainEvent(lakeId == $l1Id)
-        (not Alarm(reason == "Electricity production decreased due rain", hydroPowerPlantId == $hppId))
-    then
-        insert(new Alarm($hppId, "Electricity production decreased due rain", "medium"));
-        AlarmService.addAlarm("Electricity production decreased due rain", "medium");
-        System.out.println("Electricity production decreased due rain");
-end
-
 rule "#4 Water level high and water speed low"
     when
         $l: Lake($l1Id: id)
         $h: HydroelectricPowerPlant($hppId: id)
         Number(intValue > 5) from accumulate(
-            $w: MeasuringEvent(lakeId == $l1Id, waterLvl > 40, waterSpeed < 20)
+            $w: MeasuringEvent(lakeId == $l1Id, waterLvl > 60, waterSpeed < 40)
             over window:time(30m), count($w)
         )
         (not Alarm(reason == "Equipment malfunction", hydroPowerPlantId == $hppId))
@@ -88,68 +77,43 @@ rule "#4 Water level high and water speed low"
         System.out.println("Equipment malfunction");
 end
 
-// rule "#5 Increased rain and water level high"
-//     // timer ( cron:* 0/15 * * * ? )
-//     when
-//         $l: Lake($l1Id: id, waterLvl > 40)
-//         $h: HydroelectricPowerPlant()
-//         IncreasedRainEvent(lakeId == $l1Id)
-//     then
-//         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Water overflow"));
-//         System.out.println("Water overflow");
-// end
+ rule "#8 Water speed fast and water level high, increased generation"
+     when
+         $l: Lake($l1Id: id)
+         $h: HydroelectricPowerPlant($hppId: id)
+         Number(intValue > 5) from accumulate(
+             $w: MeasuringEvent(lakeId == $l1Id, waterSpeed > 70, waterLvl > 70)
+             over window:time(30m), count($w)
+         )
+        (not Alarm(reason == "Water overflow possible!", hydroPowerPlantId == $hppId))
+     then
+         insert(new Alarm($hppId, "Water overflow possible!", "medium"));
+         AlarmService.addAlarm("Water overflow possible!", "medium");
+         System.out.println("Water overflow possible!");
+ end
 
-// rule "#7 In 10 min big water level change"
-//     // timer ( cron:* 0/10 * * * ? )
-//     when
-//         $l: Lake($l1Id: id)
-//         $h: HydroelectricPowerPlant()
-//         MeasuringEvent(lakeId == $l1Id, $waterTemperature: waterTemp)
-//         Number(intValue > 0) from accumulate(
-//             $w: MeasuringEvent(lakeId == $l1Id, waterTemp < $waterTemperature - 10 || waterTemp > $waterTemperature + 10)
-//             over window:time(10m), count($w)
-//         )
-//     then
-//         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Equipment malfunction"));
-//         System.out.println("Equipment malfunction");
-// end
-
-
-// rule "#8 Water speed fast and water level high, increased generation"
-//     // timer ( cron:* 0/10 * * * ? )
-//     when
-//         $l: Lake($l1Id: id)
-//         $h: HydroelectricPowerPlant()
-//         Number(intValue > 5) from accumulate(
-//             $w: MeasuringEvent(lakeId == $l1Id, waterSpeed > 40, waterLvl > 40)
-//             over window:time(30m), count($w)
-//         )
-//     then
-//         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Increased power generation"));
-//         System.out.println("Increased power generation");
-// end
-
-// rule "#10 Big change in water level in last 15min"
-//     // timer ( cron:* 0/15 * * * ? )
-//     when
-//         $l: Lake($l1Id: id)
-//         $h: HydroelectricPowerPlant()
-//         MeasuringEvent(lakeId == $l1Id, $waterLevel: waterLvl)
-//         Number(intValue > 0) from accumulate(
-//             $w: MeasuringEvent(lakeId == $l1Id, waterLvl < $waterLevel - 15 || waterLvl > $waterLevel + 15)
-//             over window:time(15m), count($w)
-//         )
-//     then
-//         insert(new Alarm(lakeId: $l1Id, severity: 1, type: "Hydroelectric power plant malfunction"));
-//         System.out.println("Hydroelectric power plant malfunction");
-// end
+ rule "#10 Too frequent water level changes"
+     when
+         $l: Lake($l1Id: id)
+         $h: HydroelectricPowerPlant($hppId: id)
+         MeasuringEvent(lakeId == $l1Id)
+         Number(intValue > 10 ) from accumulate(
+             $w: MeasuringEvent(lakeId == $l1Id, waterLvl < 30 || waterLvl > 80)
+             over window:time(15m), count($w)
+         )
+        (not Alarm(reason == "Water level changing iregularly", hydroPowerPlantId == $hppId))
+     then
+         insert(new Alarm($hppId, "Water level changing iregularly", "medium"));
+         AlarmService.addAlarm("Water level changing iregularly", "medium");
+         System.out.println("Water level changing iregularly");
+ end
 
 rule "More than 3 of any of alarms fired in last 30min"
 no-loop true
     when
         Alarm($ppId: hydroPowerPlantId, severity == "medium")
-        Number(intValue == 3) from accumulate(
-            $al: Alarm(hydroPowerPlantId == $ppId)
+        Number(intValue >= 3) from accumulate(
+            $al: Alarm(hydroPowerPlantId == $ppId, severity == "medium")
             over window:time(30m), count($al)
         )
         (not SeriousMalfunctionAlarm(hydroPowerPlantId == $ppId))
@@ -163,13 +127,11 @@ rule "Serious alarm is not resolved"
 no-loop true
     when
         $sa: SeriousMalfunctionAlarm($hppId: hydroPowerPlantId)
-        Number(intValue == 1)  from accumulate(
-            $al: AlarmDeactivatedEvent(hydroPowerPlantId == $hppId)
-            over window:time(1m), count($al)
-        )
+        not ($a: AlarmDeactivatedEvent(this after[1m] $sa))
         not (StopPowerPlant(hydroPowerPlantId == $hppId))
     then
         insert(new StopPowerPlant($hppId));
+        Database.appWorking = false;
         System.out.println("Serious alarm not resolved");
 end
 
@@ -187,60 +149,3 @@ no-loop true
         AlarmService.addAlarm("Alarm resolved", "low");
         System.out.println("Alarm resolved");
 end
-
-// rule "Temperature over 25 C"
-//     when
-//         $l: Lake(waterTemp > 25)
-//         not (TurbineOverheatingEvent($l.id == lakeId))
-//         $h: HydroelectricPowerPlant()
-//     then
-//         for (var turbine : $h.getTurbines()) {
-//             turbine.setOverheatingDanger(true);
-//         }
-//         insert(new TurbineOverheatingEvent(lakeId: $l.id));
-//         System.out.println("Temperature is over 25 degrees Celsius. Danger of turbine overheating is raised.");
-// end
-
-// rule "Adjust water flow_5"
-// no-loop true
-// when
-//     $h: HydroelectricPowerPlant()
-//     $l: Lake()
-//     Number(intValue >= 5) from accumulate(
-//         $me: MeasuringEvent(windSpeed > 50,
-//                 windSpeed <= 250,
-//                 waterLvl > 70,
-//                 waterLvl <= 100,
-//                 waterTemp > 20,
-//                 waterTemp <= 99)
-//         over window:time(60m), count($me)
-//     )
-
-// then
-//     for (Turbine t : $h.getTurbines()) {
-//         t.setWaterFlow(t.getWaterFlow() * action);
-//     }
-//     System.out.println("Water flow in turbines adjusted.");
-// end
-
-//rule "2"
-//  when
-//    $u: User($uId: userId, $ip: ip)
-//    Number(intValue > 3) from accumulate(
-//        $t: TimeoutEvent(userId == $uId)
-//        over window:time(5m), count($t)
-//    )
-//  then
-//    System.out.println("ZABRANA");
-//end
-//
-//rule "3"
-//  when
-//    $l: Lake()
-//    Number(intValue > 5) from accumulate(
-//        $t: TimeoutEvent(userId == $uId)
-//        over window:time(60m), count($t)
-//    )
-//  then
-//    System.out.println("ZABRANA");
-//end

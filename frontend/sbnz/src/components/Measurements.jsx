@@ -28,7 +28,7 @@ function Measurements(props) {
           <Measurement
             lastMeasurement={lastMeasurement().waterSpeed}
             currentMeasurement={currentMeasurement().waterSpeed}
-            title="Water flow"
+            title="Water speed"
             unit="m/s"
             icon={FaWater}
           />

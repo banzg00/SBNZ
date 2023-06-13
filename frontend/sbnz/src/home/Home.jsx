@@ -95,12 +95,15 @@ const Home = () => {
     return alarms[alarms.length - 1];
   }
 
+  function stopPowerPlant() {}
+
   return (
     <div>
       <PopupModal
         isOpen={modalOpen}
         onClose={closeModal}
         description={lastAlarm()?.description}
+        stopPowerPlant={stopPowerPlant}
       />
       <NavBar />
       <div className="mx-auto">

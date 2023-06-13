@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function Measurement(props) {
   return (
-    <div className="flex items-center p-4 bg-white rounded w-96 text-xl">
+    <div className="flex items-center p-4 bg-white rounded w-[25rem] text-xl">
       <div
         className={
           "flex flex-shrink-0 items-center justify-center h-20 w-20 rounded " +

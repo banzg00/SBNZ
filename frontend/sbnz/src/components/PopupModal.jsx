@@ -1,6 +1,6 @@
 import Timer from "./Timer";
 
-const PopupModal = ({ isOpen, onClose, description }) => {
+const PopupModal = ({ isOpen, onClose, description, stopPowerPlant }) => {
   if (!isOpen) return null;
 
   return (
@@ -29,7 +29,7 @@ const PopupModal = ({ isOpen, onClose, description }) => {
                 <div className="mt-2">
                   <p className="text-xl text-gray-500">{description}</p>
                 </div>
-                <Timer />
+                <Timer stopPowerPlant={stopPowerPlant} />
               </div>
             </div>
           </div>

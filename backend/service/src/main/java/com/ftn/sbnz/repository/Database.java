@@ -30,6 +30,7 @@ public class Database {
     private List<AlarmDTO> alarms = new ArrayList<>();
     private List<MeasurementDTO> meassurements = new ArrayList<>();
     private List<MeasuringEvent> measuringEvents = new ArrayList<>();
+    public static boolean appWorking = true;
 
     public Database() {
         this.managers = List.of(new Manager("admin", "admin", "admin", "admin"));
