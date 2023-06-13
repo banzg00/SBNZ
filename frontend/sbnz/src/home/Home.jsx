@@ -25,13 +25,16 @@ const Home = () => {
 
   useEffect(() => {
     alarmService.getAlarms().then((response) => {
-      console.log(response);
       let i = 1;
+      response.data.forEach((measurement) => {
+        measurement.id = i++;
+      });
       setAlarms(response.data);
     });
     measurementService.getMeasurements().then((response) => {
       let i = 1;
       response.data.forEach((measurement) => {
+        i++;
         measurement.id = i++;
       });
       console.log(response.data);
@@ -45,7 +48,7 @@ const Home = () => {
   const onAlarm = (message) => {
     const messageData = JSON.parse(message.body);
     let alarm = {
-      id: alarms.length + 1,
+      id: alarms.length + 2,
       description: messageData.description,
       time: messageData.time.slice(0, 8),
       severity: messageData.severity,
@@ -60,7 +63,7 @@ const Home = () => {
     const messageData = JSON.parse(message.body);
     console.log(messageData);
     let measurement = {
-      id: measurements.length + 1,
+      id: measurements.length + 2,
       waterSpeed: messageData.waterSpeed,
       waterLvl: messageData.waterLvl,
       waterTemp: messageData.waterTemp,

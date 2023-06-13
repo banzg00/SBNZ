@@ -1,10 +1,7 @@
 package com.ftn.sbnz.service;
 
 import com.ftn.sbnz.dto.MeasurementDTO;
-import com.ftn.sbnz.model.events.AlarmDeactivatedEvent;
-import com.ftn.sbnz.model.events.DecreasedRainEvent;
-import com.ftn.sbnz.model.events.MeasuringEvent;
-import com.ftn.sbnz.model.events.SeriousMalfunctionAlarm;
+import com.ftn.sbnz.model.events.*;
 import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
 import com.ftn.sbnz.model.models.Lake;
 import com.ftn.sbnz.repository.Database;
@@ -90,9 +87,16 @@ public class RulesService {
     }
 
     public void alarmResolved() {
-        ksessionCep.insert(new SeriousMalfunctionAlarm(database.getHydroelectricPowerPlant().getId()));
+//        ksessionCep.insert(new SeriousMalfunctionAlarm(database.getHydroelectricPowerPlant().getId()));
         ksessionCep.insert(new AlarmDeactivatedEvent(database.getHydroelectricPowerPlant().getId()));
         ksessionCep.fireAllRules();
+        ksessionCep.dispose();
+        ksessionCep = KieServices.Factory.get().newKieClasspathContainer().newKieSession("CEPKS");
+    }
+
+    public void alarmNotResolved() {
+        ksessionCep.insert(new AlarmNotDeactivated(database.getHydroelectricPowerPlant().getId()));
+        long k1 = ksessionCep.fireAllRules();
         ksessionCep.dispose();
         ksessionCep = KieServices.Factory.get().newKieClasspathContainer().newKieSession("CEPKS");
     }

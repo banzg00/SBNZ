@@ -35,4 +35,10 @@ public class AlarmController {
         rulesService.alarmResolved();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/alarms/notresolved")
+    public ResponseEntity<?> alarmNotResolved() {
+        rulesService.alarmNotResolved();
+        return ResponseEntity.ok().build();
+    }
 }
