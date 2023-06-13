@@ -1,16 +1,18 @@
 import time
 import requests
 
+
 class Measurement:
     def __init__(self):
         self.attributes = {
-            'waterLvl': 0,
-            'waterTemp': 0,
-            'waterSpeed': 0,
-            'windSpeed': 0,
-            'waterFlow': 0,
-            'pressure': 0
+            'waterLvl': 30,
+            'waterTemp': 5,
+            'waterSpeed': 5,
+            'windSpeed': 5,
+            'waterFlow': 5,
+            'pressure': 5
         }
+
 
 def send_measurement_to_spring_boot(measurement):
     url = 'http://localhost:8080/api/measurements'
@@ -22,27 +24,61 @@ def send_measurement_to_spring_boot(measurement):
     else:
         print('Failed to send measurement')
 
+
+def print_values():
+    while True:
+        print("INCREASING")
+        for i in range(3):
+            for value in range(30, 100, 10):
+                print(value)
+                time.sleep(1)
+            print("open turbine ", i)
+
+        print("DECREASING")
+        for i in range(3):
+            for value in range(80, 10, -10):
+                print(value)
+                time.sleep(1)
+            print("close turbine ", i)
+
+
 def generate_measurements():
     measurement = Measurement()
     increasing = True
-    increment = 5
+    increasing_w_lvl = True
+    w_lvl_cnt = 0
+    increment = 10
 
     while True:
         send_measurement_to_spring_boot(measurement)
 
         for attribute in measurement.attributes:
             value = measurement.attributes[attribute]
-            value += increment if increasing else -increment
+            if attribute == 'waterLvl':
+                if value > 80:
+                    value = 30
+                    w_lvl_cnt += 1
+                elif value < 30:
+                    value = 80
+                    w_lvl_cnt += 1
 
-            if value > 100:
-                value = 100
-                increasing = False
-            elif value < 0:
-                value = 0
-                increasing = True
+                value += increment if increasing_w_lvl else -increment
+                if w_lvl_cnt == 3:
+                    increasing_w_lvl = not increasing_w_lvl
+                    w_lvl_cnt = 0
+            else:
+                value += increment if increasing else -increment
+
+                if value > 100:
+                    value = 100
+                    increasing = False
+                elif value < 0:
+                    value = 0
+                    increasing = True
 
             measurement.attributes[attribute] = value
 
-        time.sleep(5)
+        time.sleep(2)
+
 
 generate_measurements()

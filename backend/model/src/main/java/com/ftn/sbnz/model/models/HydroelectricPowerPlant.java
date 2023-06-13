@@ -24,6 +24,23 @@ public class HydroelectricPowerPlant {
         this.turbines = turbines;
     }
 
+    public Turbine getAvailableTurbine() {
+        for (var t: turbines) {
+            if (!t.isOn()) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    public void turnOffTurbine() {
+        if (turbines.get(2).isOn()) {
+            turbines.get(2).setOn(false);
+        } else if (turbines.get(1).isOn()) {
+            turbines.get(1).setOn(false);
+        }
+    }
+
     public int getActiveTurbines() {
         int active = 0;
         for (Turbine t : turbines) {

@@ -22,7 +22,7 @@ public class ChainTest {
         KieSession ksession = kc.newKieSession("cepKsession");
 
         Turbine t1 = new Turbine(1, 30, false, 30, true);
-        Turbine t2 = new Turbine(2, 30, false, 35, true);
+        Turbine t2 = new Turbine(2, 30, false, 35, false);
         Turbine t3 = new Turbine(3, 50, false, 39, false);
 
         Lake lake = new Lake(1, 80, 30, 20, 40);
@@ -48,7 +48,7 @@ public class ChainTest {
         KieSession ksession = kc.newKieSession("cepKsession");
 
         Turbine t1 = new Turbine(1, 30, false, 30, true);
-        Turbine t2 = new Turbine(2, 30, false, 35, true);
+        Turbine t2 = new Turbine(2, 30, false, 35, false);
         Turbine t3 = new Turbine(3, 50, false, 39, false);
 
         Lake lake = new Lake(1, 90, 15, 20, 40);
