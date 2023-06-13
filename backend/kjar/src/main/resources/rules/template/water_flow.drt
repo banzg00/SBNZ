@@ -34,7 +34,6 @@ then
     for (Turbine t : $h.getTurbines()) {
         t.setWaterFlow(t.getWaterFlow() * @{action});
     }
-
     System.out.println("Water flow in turbines adjusted.");
 end
 

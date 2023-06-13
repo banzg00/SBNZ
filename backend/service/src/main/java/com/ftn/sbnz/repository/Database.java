@@ -1,5 +1,7 @@
 package com.ftn.sbnz.repository;
 
+import com.ftn.sbnz.dto.MeasurementDTO;
+import com.ftn.sbnz.model.events.MeasuringEvent;
 import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
 import com.ftn.sbnz.model.models.Lake;
 import com.ftn.sbnz.model.models.Manager;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +27,9 @@ public class Database {
     private Lake lake;
     private HydroelectricPowerPlant hydroelectricPowerPlant;
 
+    private List<String> alarms;
+    private List<MeasurementDTO> meassurements = new ArrayList<>();
+
     public Database() {
         this.managers = List.of(new Manager("admin", "admin", "admin", "admin"));
         this.turbines = turbines();
@@ -32,9 +38,9 @@ public class Database {
     }
 
     private List<Turbine> turbines() {
-        Turbine t1 = new Turbine(1);
-        Turbine t2 = new Turbine(2);
-        Turbine t3 = new Turbine(3);
+        Turbine t1 = new Turbine(1, 0.5, false, 0, true);
+        Turbine t2 = new Turbine(2, 0.5, false, 0, false);
+        Turbine t3 = new Turbine(3, 0.5, false, 0, false);
         return Arrays.asList(t1, t2, t3);
     }
 

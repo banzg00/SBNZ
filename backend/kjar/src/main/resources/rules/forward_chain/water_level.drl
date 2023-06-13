@@ -53,5 +53,11 @@ rule "Turbine pressure decreased"
     then
         $h.setElectricityProduction($h.getElectricityProduction() * 0.4);
         insert(new ElectricityProductionDecreasedEvent($t.getLakeId()));
+        for (Turbine turbine : $h.getTurbines()) {
+            if (!turbine.isOn()) {
+                turbine.setOn(true);;
+                break;
+            }
+        }
         System.out.println("Pressure on turbines decreased. Electricity production will be decreased by 40%.");
 end

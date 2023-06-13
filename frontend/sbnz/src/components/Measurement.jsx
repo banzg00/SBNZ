@@ -29,7 +29,7 @@ function Measurement(props) {
         <span className="text-xl font-bold">
           {props.currentMeasurement} {props.unit}
         </span>
-        <div class="flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <span className="text-gray-500">
             {props.title}{" "}
             {props.title !== "Electricity generated" ? "increase" : ""}
@@ -44,9 +44,10 @@ function Measurement(props) {
           >
             {props.currentMeasurement - props.lastMeasurement > 0 ? "+" : ""}
             {(
-              (props.currentMeasurement - props.lastMeasurement) /
-              props.currentMeasurement
-            ).toPrecision(2) * 100}{" "}
+              ((props.currentMeasurement - props.lastMeasurement) /
+                props.currentMeasurement) *
+              100
+            ).toFixed(1)}
             %
           </span>
         </div>

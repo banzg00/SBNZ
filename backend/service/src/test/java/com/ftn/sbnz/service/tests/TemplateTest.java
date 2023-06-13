@@ -56,9 +56,9 @@ public class TemplateTest {
     private void doTest(KieSession ksession){
         SessionPseudoClock clock = ksession.getSessionClock();
 
-        Turbine t1 = new Turbine(1, 30, false, 30);
-        Turbine t2 = new Turbine(2, 30, false, 35);
-        Turbine t3 = new Turbine(3, 50, false, 39);
+        Turbine t1 = new Turbine(1, 30, false, 30, true);
+        Turbine t2 = new Turbine(2, 30, false, 35, true);
+        Turbine t3 = new Turbine(3, 50, false, 39, false);
 
         Lake lake = new Lake(1, 20, 30, 20, 40);
 

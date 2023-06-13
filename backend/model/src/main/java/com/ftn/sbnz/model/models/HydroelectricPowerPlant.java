@@ -23,4 +23,14 @@ public class HydroelectricPowerPlant {
         this.lake = lake;
         this.turbines = turbines;
     }
+
+    public int getActiveTurbines() {
+        int active = 0;
+        for (Turbine t : turbines) {
+            if (t.isOn()) {
+                active++;
+            }
+        }
+        return active;
+    }
 }

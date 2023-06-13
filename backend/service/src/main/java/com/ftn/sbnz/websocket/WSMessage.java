@@ -13,8 +13,6 @@ public class WSMessage {
     @Getter
     private MessageType type;
     @Getter
-    private Integer id;
-    @Getter
     private List<String> messages;
     @Getter
     private LocalTime sentTime;
