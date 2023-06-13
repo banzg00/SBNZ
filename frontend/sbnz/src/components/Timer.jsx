@@ -4,7 +4,7 @@ const Timer = (props) => {
   // We need ref in this, because we are dealing
   // with JS setInterval to keep track of it and
   // stop it when needed
-  const Ref = useRef(null);
+  let Ref = useRef();
 
   // The state for our timer
   const [timer, setTimer] = useState("00:00:00");
@@ -56,10 +56,8 @@ const Timer = (props) => {
 
   const getDeadTime = () => {
     let deadline = new Date();
-
-    // This is where you need to adjust if
-    // you entend to add more time
     deadline.setSeconds(deadline.getSeconds() + 60 * 1);
+
     return deadline;
   };
 
@@ -69,7 +67,9 @@ const Timer = (props) => {
   // We put empty array to act as componentDid
   // mount only
   useEffect(() => {
-    clearTimer(getDeadTime());
+    let deadline = new Date();
+    deadline.setSeconds(deadline.getSeconds() + 60 * 1);
+    clearTimer(deadline);
   }, []);
 
   useEffect(() => {

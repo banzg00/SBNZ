@@ -41,10 +41,6 @@ public class Database {
         Turbine t2 = new Turbine(2, 100, false);
         Turbine t3 = new Turbine(3, 100, false);
 
-        // TODO: MILADIN
-        // Turbine t1 = new Turbine(1, 0.5, false, 0, true);
-        // Turbine t2 = new Turbine(2, 0.5, false, 0, false);
-        // Turbine t3 = new Turbine(3, 0.5, false, 0, false);
         return Arrays.asList(t1, t2, t3);
     }
 
