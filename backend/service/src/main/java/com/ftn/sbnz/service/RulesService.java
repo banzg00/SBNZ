@@ -70,7 +70,7 @@ public class RulesService {
 
     private void setMeasurements(MeasurementDTO measurement, KieSession kieSession) {
         for (var t : database.getTurbines()) {
-            t.setWaterFlow(measurement.getWaterLvl() * measurement.getWaterSpeed() * 0.8);
+            t.setWaterFlow(measurement.getWaterLvl() * measurement.getWaterSpeed() * 0.5);
             kieSession.insert(t);
         }
         Lake lake = database.getLake();

@@ -6,9 +6,9 @@ class Measurement:
     def __init__(self):
         self.attributes = {
             'waterLvl': 30,
-            'waterTemp': 5,
-            'waterSpeed': 5,
-            'windSpeed': 5
+            'waterTemp': 10,
+            'waterSpeed': 10,
+            'windSpeed': 10
         }
 
 
@@ -53,8 +53,8 @@ def generate_measurements():
                 if value > 100:
                     value = 100
                     increasing = False
-                elif value < 0:
-                    value = 0
+                elif value < 20:
+                    value = 10
                     increasing = True
 
             measurement.attributes[attribute] = value
