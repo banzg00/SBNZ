@@ -36,7 +36,6 @@ const Home = () => {
       response.data.forEach((measurement) => {
         measurement.id = i++;
       });
-      console.log(response.data);
       setMeasurements(response.data);
     });
   }, []);
@@ -60,7 +59,6 @@ const Home = () => {
 
   const onMeasurement = (message) => {
     const messageData = JSON.parse(message.body);
-    console.log(messageData);
     let measurement = {
       id: measurements.length * 2,
       waterSpeed: messageData.waterSpeed,
