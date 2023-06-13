@@ -49,9 +49,6 @@ public class RulesService {
         database.getMeasuringEvents().add(measuringEvent);
         ksessionCep.insert(measuringEvent);
 
-        if (measuringEvent.getWaterLvl() < 10 && measuringEvent.getWindSpeed() < 10) {
-            ksessionCep.insert(new DecreasedRainEvent(lake.getId()));
-        }
         long k1 = ksessionCep.fireAllRules();
         System.out.println(k1);
     }

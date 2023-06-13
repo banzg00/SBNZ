@@ -127,7 +127,7 @@ rule "Serious alarm is not resolved"
 no-loop true
     when
         $sa: SeriousMalfunctionAlarm($hppId: hydroPowerPlantId)
-        not ($a: AlarmDeactivatedEvent(this after[1m] $sa))
+        not(AlarmDeactivatedEvent(this after[0s, 1m] $sa))
         not (StopPowerPlant(hydroPowerPlantId == $hppId))
     then
         insert(new StopPowerPlant($hppId));

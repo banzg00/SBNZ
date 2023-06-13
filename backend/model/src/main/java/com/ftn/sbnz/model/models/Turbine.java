@@ -14,7 +14,7 @@ public class Turbine {
     private boolean on;
 
     public double getPowerGenerated() {
-        return waterFlow * 10 * Math.PI / Math.sqrt(5);
+        return waterFlow * 2 * Math.PI / Math.sqrt(5);
     }
 
 }
