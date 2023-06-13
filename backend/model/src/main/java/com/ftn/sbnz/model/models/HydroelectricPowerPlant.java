@@ -39,6 +39,7 @@ public class HydroelectricPowerPlant {
         } else if (turbines.get(1).isOn()) {
             turbines.get(1).setOn(false);
         }
+    }
 
     public int getActiveTurbines() {
         int active = 0;
@@ -48,6 +49,5 @@ public class HydroelectricPowerPlant {
             }
         }
         return active;
-
     }
 }
