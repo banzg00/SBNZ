@@ -16,6 +16,7 @@ import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
 import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
 import com.ftn.sbnz.model.events.MeasuringEvent;
 import com.ftn.sbnz.model.events.AlarmDeactivatedEvent;
+import com.ftn.sbnz.model.events.AlarmNotDeactivated;
 import com.ftn.sbnz.model.events.Alarm;
 import com.ftn.sbnz.service.AlarmService;
 import com.ftn.sbnz.model.events.SeriousMalfunctionAlarm;
@@ -162,7 +163,7 @@ rule "Serious alarm is not resolved"
 no-loop true
     when
         $sa: SeriousMalfunctionAlarm($hppId: hydroPowerPlantId)
-        Number(intValue == 0)  from accumulate(
+        Number(intValue == 1)  from accumulate(
             $al: AlarmDeactivatedEvent(hydroPowerPlantId == $hppId)
             over window:time(1m), count($al)
         )
@@ -176,7 +177,10 @@ rule "Serious alarm resolved"
 no-loop true
     when
         $sa: SeriousMalfunctionAlarm($hppId: hydroPowerPlantId)
-        AlarmDeactivatedEvent(hydroPowerPlantId == $hppId)
+        Number(intValue == 1)  from accumulate(
+            $al: AlarmDeactivatedEvent(hydroPowerPlantId == $hppId)
+            over window:time(1m), count($al)
+        )
         (not Alarm(reason == "Alarm resolved", hydroPowerPlantId == $hppId, severity == "low"))
     then
         insert(new Alarm($hppId, "Alarm resolved", "low"));
