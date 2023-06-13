@@ -37,7 +37,7 @@ public class CEPTest {
 
         Turbine t1 = new Turbine(1, 30, false, 30, true);
         Turbine t2 = new Turbine(2, 30, false, 35, true);
-        Turbine t3 = new Turbine(3, 50, false, 39, true);
+        Turbine t3 = new Turbine(3, 50, false, 39, false);
 
         Lake lake = new Lake(1, 15, 30, 15, 40);
 

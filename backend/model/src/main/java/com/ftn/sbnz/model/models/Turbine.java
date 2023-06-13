@@ -19,4 +19,5 @@ public class Turbine {
         this.id = id;
         this.on = on;
     }
+
 }

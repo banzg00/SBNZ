@@ -1,5 +1,8 @@
 package com.ftn.sbnz.repository;
 
+import com.ftn.sbnz.dto.AlarmDTO;
+import com.ftn.sbnz.dto.MeasurementDTO;
+import com.ftn.sbnz.model.events.MeasuringEvent;
 import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
 import com.ftn.sbnz.model.models.Lake;
 import com.ftn.sbnz.model.models.Manager;
@@ -11,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,11 +23,13 @@ import java.util.List;
 @Setter
 @Component
 public class Database {
-
     private List<Manager> managers;
     private List<Turbine> turbines;
     private Lake lake;
     private HydroelectricPowerPlant hydroelectricPowerPlant;
+    private List<AlarmDTO> alarms = new ArrayList<>();
+    private List<MeasurementDTO> meassurements = new ArrayList<>();
+    private List<MeasuringEvent> measuringEvents = new ArrayList<>();
 
     public Database() {
         this.managers = List.of(new Manager("admin", "admin", "admin", "admin"));
@@ -35,6 +42,11 @@ public class Database {
         Turbine t1 = new Turbine(1, true);
         Turbine t2 = new Turbine(2, false);
         Turbine t3 = new Turbine(3, false);
+
+        // TODO: MILADIN
+        // Turbine t1 = new Turbine(1, 0.5, false, 0, true);
+        // Turbine t2 = new Turbine(2, 0.5, false, 0, false);
+        // Turbine t3 = new Turbine(3, 0.5, false, 0, false);
         return Arrays.asList(t1, t2, t3);
     }
 
@@ -51,5 +63,9 @@ public class Database {
                 .filter(manager -> manager.getUsername().equals(username) && manager.getPassword().equals(password))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void addAlarm(String description, String severity, LocalTime time) {
+        this.alarms.add(new AlarmDTO(description, severity, time));
     }
 }

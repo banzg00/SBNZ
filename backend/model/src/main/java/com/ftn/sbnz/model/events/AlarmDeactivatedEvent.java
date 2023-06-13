@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public class AlarmDeactivatedEvent implements Serializable {
     
     private static final long serialVersionUID = 1L;
-
     public long hydroPowerPlantId;
     private Date executionTime;
 

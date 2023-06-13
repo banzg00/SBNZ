@@ -4,57 +4,25 @@ import MeasurementHistory from "./MeasurementHistory";
 import { FaWind, FaWater, FaTemperatureHigh, FaBolt } from "react-icons/fa";
 import { TbEngine } from "react-icons/tb";
 
-function Measurements() {
-  let [activeTurbines, setActiveTurbines] = useState(5);
-  const totalTurbines = 10;
+function Measurements(props) {
+  const totalTurbines = 5;
 
   let [showMeasurements, setShowMeasurements] = useState(false);
 
-  let measurements = [
-    {
-      id: 1,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 2,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 3,
-      waterSpeed: 160,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 45,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 4,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
-  ];
-
   function currentMeasurement() {
-    return measurements[measurements.length - 1];
+    const current =
+      props.measurements.length - 1 < 0 ? 0 : props.measurements.length - 1;
+    return props.measurements[current];
   }
 
   function lastMeasurement() {
-    return measurements[measurements.length - 2];
+    const last =
+      props.measurements.length - 2 < 0 ? 0 : props.measurements.length - 2;
+    return props.measurements[last];
   }
 
   return (
-    <div>
+    <div className="mx-auto">
       <div className="bg-white">
         <div className="flex">
           <Measurement
@@ -65,15 +33,15 @@ function Measurements() {
             icon={FaWater}
           />
           <Measurement
-            lastMeasurement={lastMeasurement().waterLevel}
-            currentMeasurement={currentMeasurement().waterLevel}
+            lastMeasurement={lastMeasurement().waterLvl}
+            currentMeasurement={currentMeasurement().waterLvl}
             title="Water level"
             unit="m"
             icon={FaWater}
           />
           <Measurement
-            lastMeasurement={lastMeasurement().waterTemperature}
-            currentMeasurement={currentMeasurement().waterTemperature}
+            lastMeasurement={lastMeasurement().waterTemp}
+            currentMeasurement={currentMeasurement().waterTemp}
             title="Water Temp"
             unit="C"
             icon={FaTemperatureHigh}
@@ -107,9 +75,9 @@ function Measurements() {
             </div>
             <div className="flex-grow flex flex-col ml-4">
               <span className="text-xl font-bold">
-                {activeTurbines}/{totalTurbines}
+                {props.turbines}/{totalTurbines}
               </span>
-              <div class="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <span className="text-gray-500">Turbines activated</span>
               </div>
             </div>
@@ -126,7 +94,7 @@ function Measurements() {
           </button>
         </div>
         {showMeasurements ? (
-          <MeasurementHistory measurements={measurements} />
+          <MeasurementHistory measurements={props.measurements} />
         ) : (
           <div></div>
         )}

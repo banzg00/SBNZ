@@ -15,4 +15,6 @@ public class MeasurementDTO {
     private double windSpeed;
     private double waterFlow;
     private double pressure;
+    private double electricityGenerated;
+    private int turbines;
 }

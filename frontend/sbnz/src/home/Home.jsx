@@ -3,31 +3,74 @@ import NavBar from "../components/NavBar";
 import Measurements from "../components/Measurements";
 import Alarms from "../components/Alarms";
 import PopupModal from "../components/PopupModal";
-import SockJsClient from "react-stomp";
+import { StompSessionProvider, useSubscription } from "react-stomp-hooks";
+import alarmService from "../services/alarmService";
+import measurementService from "../services/measurementService";
 
 const SOCKET_URL = "http://localhost:8080/ws";
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [message, setMessage] = useState("You server message here.");
-
-  var clientRef;
-
-  let onConnected = () => {
-    console.log("Connected!!");
-  };
-
-  let onMessageReceived = (msg) => {
-    console.log(msg);
-  };
+  const [alarms, setAlarms] = useState([]);
+  const [measurements, setMeasurements] = useState([
+    {
+      waterSpeed: 1,
+      waterLvl: 1,
+      waterTemp: 1,
+      windSpeed: 1,
+      electricityGenerated: 1,
+    },
+  ]);
+  const [turbines, setTurbines] = useState([1]);
 
   useEffect(() => {
-    console.log("componentDidMount");
-  });
+    alarmService.getAlarms().then((response) => {
+      console.log(response);
+      let i = 1;
+      setAlarms(response.data);
+    });
+    measurementService.getMeasurements().then((response) => {
+      let i = 1;
+      response.data.forEach((measurement) => {
+        measurement.id = i++;
+      });
+      console.log(response.data);
+      setMeasurements(response.data);
+    });
+  }, []);
 
-  function sendMess() {
-    this.clientRef.sendMessage("/app/alarm", message);
-  }
+  useSubscription("/topic/alarm", (message) => onAlarm(message));
+  useSubscription("/topic/measurement", (message) => onMeasurement(message));
+
+  const onAlarm = (message) => {
+    const messageData = JSON.parse(message.body);
+    let alarm = {
+      id: alarms.length + 1,
+      description: messageData.description,
+      time: messageData.time.slice(0, 8),
+      severity: messageData.severity,
+    };
+    setAlarms((alarms) => [...alarms, alarm]);
+    if (messageData.severity === "high") {
+      openModal();
+    }
+  };
+
+  const onMeasurement = (message) => {
+    const messageData = JSON.parse(message.body);
+    console.log(messageData);
+    let measurement = {
+      id: measurements.length + 1,
+      waterSpeed: messageData.waterSpeed,
+      waterLvl: messageData.waterLvl,
+      waterTemp: messageData.waterTemp,
+      windSpeed: messageData.windSpeed,
+      electricityGenerated: messageData.electricityGenerated,
+    };
+    setMeasurements((measurements) => [...measurements, measurement]);
+    setTurbines(messageData.turbinesActive);
+  };
+
   const openModal = () => {
     setModalOpen(true);
   };
@@ -35,55 +78,6 @@ const Home = () => {
   const closeModal = () => {
     setModalOpen(false);
   };
-  const alarms = [
-    {
-      id: 1,
-      description: "Low water pressure",
-      time: "10:10",
-      severity: "high",
-    },
-    {
-      id: 2,
-      description: "High temperature",
-      time: "10:10",
-      severity: "medium",
-    },
-    { id: 3, description: "Power outage", time: "10:10", severity: "high" },
-  ];
-  let measurements = [
-    {
-      id: 1,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 2,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 3,
-      waterSpeed: 130,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 45,
-      electricityGenerated: 1200,
-    },
-    {
-      id: 4,
-      waterSpeed: 150,
-      waterLevel: 80,
-      waterTemperature: 25,
-      windSpeed: 50,
-      electricityGenerated: 1200,
-    },
-  ];
 
   function lastMeasurement() {
     return measurements[measurements.length - 1];
@@ -99,28 +93,18 @@ const Home = () => {
 
   return (
     <div>
-      <SockJsClient
-        url={SOCKET_URL}
-        topics={["/topic/public"]}
-        onConnect={onConnected}
-        onDisconnect={console.log("Disconnected!")}
-        onMessage={(msg) => onMessageReceived(msg)}
-        debug={false}
-        ref={(client) => (this.clientRef = client)}
-      />
       <PopupModal
         isOpen={modalOpen}
         onClose={closeModal}
-        description={lastAlarm().description}
+        description={lastAlarm()?.description}
       />
       <NavBar />
-      <button onClick={sendMess}>Open modal</button>
-      <div className="mx-auto mt-8 ">
-        <div className="grid grid-rows-2 gap-4 mt-14 ">
-          <div className="mx-auto ">
-            <Measurements />
+      <div className="mx-auto">
+        <div className="mt-14 mx-auto">
+          <div className="mx-auto w-[1200px]">
+            <Measurements measurements={measurements} turbines={turbines} />
           </div>
-          <div className="bg-white p-4 mx-auto">
+          <div className="bg-white p-4 mx-auto mr-9">
             <Alarms alarms={alarms} />
           </div>
         </div>

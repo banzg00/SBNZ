@@ -39,5 +39,15 @@ public class HydroelectricPowerPlant {
         } else if (turbines.get(1).isOn()) {
             turbines.get(1).setOn(false);
         }
+
+    public int getActiveTurbines() {
+        int active = 0;
+        for (Turbine t : turbines) {
+            if (t.isOn()) {
+                active++;
+            }
+        }
+        return active;
+
     }
 }
