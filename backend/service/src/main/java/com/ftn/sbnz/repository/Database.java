@@ -32,9 +32,9 @@ public class Database {
     }
 
     private List<Turbine> turbines() {
-        Turbine t1 = new Turbine(1);
-        Turbine t2 = new Turbine(2);
-        Turbine t3 = new Turbine(3);
+        Turbine t1 = new Turbine(1, true);
+        Turbine t2 = new Turbine(2, false);
+        Turbine t3 = new Turbine(3, false);
         return Arrays.asList(t1, t2, t3);
     }
 

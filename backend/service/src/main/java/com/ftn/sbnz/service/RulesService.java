@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RulesService {
 
-    private Database database;
+    private final Database database;
 
     @Autowired
     public RulesService(Database database) {
@@ -23,7 +23,7 @@ public class RulesService {
     public void fireChainRules(MeasurementDTO measurement) {
         KieServices ks = KieServices.Factory.get();
         KieContainer kc = ks.newKieClasspathContainer();
-        KieSession ksession = kc.newKieSession("cepKsession");
+        KieSession ksession = kc.newKieSession("forwardKS");
 
         for (var t: database.getTurbines()) {
             t.setPressure(measurement.getPressure());
@@ -39,17 +39,14 @@ public class RulesService {
         ksession.insert(lake);
 
         HydroelectricPowerPlant h = database.getHydroelectricPowerPlant();
-        h.setValvesOpened(false);
         h.setElectricityProduction(100);
-        h.setGeneratorsOn(false);
         h.setTurbines(database.getTurbines());
         h.setLake(database.getLake());
         ksession.insert(h);
 
         long k1 = ksession.fireAllRules();
 
-        System.out.println(k1 == 4);
-        System.out.println(database.getHydroelectricPowerPlant().isGeneratorsOn());
+        System.out.println(k1 == 3);
 
         ksession.dispose();
     }

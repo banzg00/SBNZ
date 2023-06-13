@@ -1,0 +1,68 @@
+package rules.forward_chain;
+
+import com.ftn.sbnz.model.models.Lake;
+import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
+import com.ftn.sbnz.model.models.Turbine;
+import com.ftn.sbnz.model.events.WaterLevelHighEvent;
+import com.ftn.sbnz.model.events.TurbinePressureDecreasedEvent;
+import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
+import com.ftn.sbnz.model.events.ValvesOpenedEvent;
+import com.ftn.sbnz.model.events.TurbineOnEvent;
+
+// TODO: 10 15 ... 80 85 -> okini pravila -> skripta krene da spusta -> 80 75 ... 20 15 -> i onda kontra pravila da se zatvore ventili ako je waterLVL na 20
+
+rule "Water level above 80%"
+    when
+        $l: Lake(waterLvl > 80)
+        not (WaterLevelHighEvent($l.id == lakeId))
+        $h: HydroelectricPowerPlant()
+    then
+        insert(new WaterLevelHighEvent($l.getId()));
+        System.out.println("Water level above 80%. Turbine will be turned on or valves will be opened.");
+end
+
+rule "Turbine on"
+    when
+        $w: WaterLevelHighEvent()
+        not (TurbineOnEvent($w.lakeId == lakeId))
+        not (ValvesOpenedEvent($w.lakeId == lakeId))
+        $l: Lake()
+        $h: HydroelectricPowerPlant()
+        eval($h.getAvailableTurbine() != null)
+    then
+        $h.getAvailableTurbine().setOn(true);
+        insert(new TurbineOnEvent($l.getId()));
+        System.out.println("Turbine turned on. Water level will be decreased.");
+end
+
+rule "Valves opened"
+    when
+        $w: WaterLevelHighEvent()
+        not (TurbineOnEvent($w.lakeId == lakeId))
+        not (ValvesOpenedEvent($w.lakeId == lakeId))
+        $l: Lake()
+        $h: HydroelectricPowerPlant()
+        eval($h.getAvailableTurbine() == null)
+    then
+        modify($h){ setValvesOpened(true) }
+        insert(new ValvesOpenedEvent($l.getId()));
+        System.out.println("Valves opened. Water level will be decreased.");
+end
+
+// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
+rule "Turbine on notification"
+    when
+        $e: TurbineOnEvent()
+        $h: HydroelectricPowerPlant()
+    then
+        System.out.println("Sending notification...");
+end
+
+// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
+rule "Valves open notification"
+    when
+        $e: ValvesOpenedEvent()
+        $h: HydroelectricPowerPlant()
+    then
+        System.out.println("Sending notification...");
+end

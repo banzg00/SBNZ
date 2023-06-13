@@ -1,0 +1,66 @@
+package rules.forward_chain;
+
+import com.ftn.sbnz.model.models.Lake;
+import com.ftn.sbnz.model.models.HydroelectricPowerPlant;
+import com.ftn.sbnz.model.models.Turbine;
+import com.ftn.sbnz.model.events.WaterLevelHighEvent;
+import com.ftn.sbnz.model.events.WaterLevelLowEvent;
+import com.ftn.sbnz.model.events.TurbinePressureDecreasedEvent;
+import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
+import com.ftn.sbnz.model.events.ValvesClosedEvent;
+import com.ftn.sbnz.model.events.TurbineOffEvent;
+
+
+rule "Water level beyond 30%"
+    when
+        $l: Lake(waterLvl < 30)
+        not (WaterLevelLowEvent($l.id == lakeId))
+        $h: HydroelectricPowerPlant()
+    then
+        insert(new WaterLevelLowEvent($l.getId()));
+        System.out.println("Water level beyond 30%. Turbine will be turned off or valves will be closed.");
+end
+
+rule "Valves closed"
+    when
+        $w: WaterLevelLowEvent()
+        not (TurbineOffEvent($w.lakeId == lakeId))
+        not (ValvesClosedEvent($w.lakeId == lakeId))
+        $l: Lake()
+        $h: HydroelectricPowerPlant(valvesOpened == true)
+    then
+        modify($h){ setValvesOpened(false) }
+        insert(new ValvesClosedEvent($l.getId()));
+        System.out.println("Valves closed. Water level will be increased.");
+end
+
+rule "Turbine off"
+    when
+        $w: WaterLevelLowEvent()
+        not (TurbineOffEvent($w.lakeId == lakeId))
+        not (ValvesClosedEvent($w.lakeId == lakeId))
+        $l: Lake()
+        $h: HydroelectricPowerPlant(valvesOpened == false)
+    then
+        $h.turnOffTurbine();
+        insert(new TurbineOffEvent($l.getId()));
+        System.out.println("Turbine turned off. Water level will be increased.");
+end
+
+// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
+rule "Turbine off notification"
+    when
+        $e: TurbineOffEvent()
+        $h: HydroelectricPowerPlant()
+    then
+        System.out.println("Sending notification...");
+end
+
+// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
+rule "Valves closed notification"
+    when
+        $e: ValvesClosedEvent()
+        $h: HydroelectricPowerPlant()
+    then
+        System.out.println("Sending notification...");
+end

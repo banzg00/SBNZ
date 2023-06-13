@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Role(Role.Type.EVENT)
-public class WaterLevelDecreasedEvent implements Serializable {
+public class ValvesOpenedEvent implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
