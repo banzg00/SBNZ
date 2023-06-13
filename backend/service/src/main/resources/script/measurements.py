@@ -8,9 +8,7 @@ class Measurement:
             'waterLvl': 30,
             'waterTemp': 5,
             'waterSpeed': 5,
-            'windSpeed': 5,
-            'waterFlow': 5,
-            'pressure': 5
+            'windSpeed': 5
         }
 
 
@@ -23,23 +21,6 @@ def send_measurement_to_spring_boot(measurement):
         print('Measurement sent successfully')
     else:
         print('Failed to send measurement')
-
-
-def print_values():
-    while True:
-        print("INCREASING")
-        for i in range(3):
-            for value in range(30, 100, 10):
-                print(value)
-                time.sleep(1)
-            print("open turbine ", i)
-
-        print("DECREASING")
-        for i in range(3):
-            for value in range(80, 10, -10):
-                print(value)
-                time.sleep(1)
-            print("close turbine ", i)
 
 
 def generate_measurements():

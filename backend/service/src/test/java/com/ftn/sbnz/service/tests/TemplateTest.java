@@ -82,7 +82,7 @@ public class TemplateTest {
 
         assertEquals(1, n);
         assertTrue(t1.getWaterFlow() > 30);
-
+        System.out.println(t1.getWaterFlow());
     }
 
 }

@@ -12,7 +12,6 @@ import java.util.List;
 public class HydroelectricPowerPlant {
 
     private long id;
-    private double electricityProduction;
     private Lake lake;
     private List<Turbine> turbines;
     private boolean generatorsOn;
@@ -55,7 +54,7 @@ public class HydroelectricPowerPlant {
         int power = 0;
         for (Turbine t : turbines) {
             if (t.isOn()) {
-                power += t.getpowerGenerated();
+                power += t.getPowerGenerated();
             }
         }
         return power;

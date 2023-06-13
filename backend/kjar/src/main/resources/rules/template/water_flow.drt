@@ -21,7 +21,7 @@ no-loop true
 when
     $h: HydroelectricPowerPlant()
     $l: Lake()
-    Number(intValue >= 5) from accumulate(
+    Number(intValue >= 2) from accumulate(
         $me: MeasuringEvent(windSpeed > @{minWindSpeed},
                 windSpeed <= @{maxWindSpeed},
                 waterLvl > @{minWaterLvl},

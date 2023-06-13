@@ -19,6 +19,7 @@ public class RulesService {
 
     private final Database database;
     private KieSession ksessionCep;
+    private KieSession ksessionTemplate;
 
     @Autowired
     public RulesService(Database database) {
@@ -26,6 +27,7 @@ public class RulesService {
         KieServices ks = KieServices.Factory.get();
         KieContainer kc = ks.newKieClasspathContainer();
         ksessionCep = kc.newKieSession("CEPKS");
+        ksessionTemplate = kc.newKieSession("templateKS");
     }
 
     public void fireChainRules(MeasurementDTO measurement) {
@@ -57,11 +59,21 @@ public class RulesService {
         System.out.println(k1);
     }
 
+    public void fireTemplateRules(MeasurementDTO measurement) {
+        setMeasurements(measurement, ksessionTemplate);
+        Lake lake = database.getLake();
+
+        MeasuringEvent measuringEvent = new MeasuringEvent(measurement.getWindSpeed(), measurement.getWaterSpeed(), measurement.getWaterTemp(), measurement.getWaterLvl(), lake.getId());
+        database.getMeasuringEvents().add(measuringEvent);
+        ksessionTemplate.insert(measuringEvent);
+
+        long k1 = ksessionTemplate.fireAllRules();
+        System.out.println(k1);
+    }
+
     private void setMeasurements(MeasurementDTO measurement, KieSession kieSession) {
         for (var t : database.getTurbines()) {
-            t.setPressure(measurement.getPressure());
-            t.setWaterFlow(measurement.getWaterFlow());
-            t.setOverheatingDanger(false);
+            t.setWaterFlow(measurement.getWaterLvl() * measurement.getWaterSpeed() * 0.8);
             kieSession.insert(t);
         }
         Lake lake = database.getLake();
@@ -72,7 +84,6 @@ public class RulesService {
         kieSession.insert(lake);
 
         HydroelectricPowerPlant h = database.getHydroelectricPowerPlant();
-        h.setElectricityProduction(100);
         h.setTurbines(database.getTurbines());
         h.setLake(database.getLake());
         kieSession.insert(h);
@@ -81,7 +92,7 @@ public class RulesService {
     public void alarmResolved() {
         ksessionCep.insert(new SeriousMalfunctionAlarm(database.getHydroelectricPowerPlant().getId()));
         ksessionCep.insert(new AlarmDeactivatedEvent(database.getHydroelectricPowerPlant().getId()));
-        long k1 = ksessionCep.fireAllRules();
+        ksessionCep.fireAllRules();
         ksessionCep.dispose();
         ksessionCep = KieServices.Factory.get().newKieClasspathContainer().newKieSession("CEPKS");
     }
