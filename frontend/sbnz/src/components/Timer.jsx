@@ -67,16 +67,14 @@ const Timer = (props) => {
   // We put empty array to act as componentDid
   // mount only
   useEffect(() => {
-    let deadline = new Date();
-    deadline.setSeconds(deadline.getSeconds() + 60 * 1);
-    clearTimer(deadline);
+    clearTimer(getDeadTime());
   }, []);
 
   useEffect(() => {
     if (timer === "00:00:00") {
       props.stopPowerPlant();
     }
-  }, timer);
+  }, [timer]);
 
   // Another way to call the clearTimer() to start
   // the countdown is via action event from the
