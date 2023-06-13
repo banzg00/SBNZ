@@ -21,7 +21,7 @@ public class Turbine {
     }
 
     public double getpowerGenerated() {
-        return waterFlow * 300;
+        return waterFlow * 100;
     }
 
 }

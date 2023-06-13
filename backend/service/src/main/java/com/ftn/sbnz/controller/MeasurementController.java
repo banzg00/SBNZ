@@ -36,7 +36,7 @@ public class MeasurementController {
 
     @PostMapping("/measurements")
     public ResponseEntity<?> getMeasurements(@RequestBody MeasurementDTO measurement) {
-        measurement.setElectricityGenerated(1200);
+        measurement.setElectricityGenerated(database.getHydroelectricPowerPlant().getPowerGenerated());
         measurement.setTurbines(database.getHydroelectricPowerPlant().getActiveTurbines());
         database.getMeassurements().add(measurement);
         rulesService.fireChainRules(measurement);
