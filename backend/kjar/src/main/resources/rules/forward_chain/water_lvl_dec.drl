@@ -9,7 +9,7 @@ import com.ftn.sbnz.model.events.TurbinePressureDecreasedEvent;
 import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
 import com.ftn.sbnz.model.events.ValvesClosedEvent;
 import com.ftn.sbnz.model.events.TurbineOffEvent;
-
+import com.ftn.sbnz.service.AlarmService;
 
 rule "Water level beyond 30%"
     when
@@ -47,20 +47,20 @@ rule "Turbine off"
         System.out.println("Turbine turned off. Water level will be increased.");
 end
 
-// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
 rule "Turbine off notification"
     when
         $e: TurbineOffEvent()
         $h: HydroelectricPowerPlant()
     then
+        AlarmService.addAlarm("Turbine turned off.", "low");
         System.out.println("Sending notification...");
 end
 
-// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
 rule "Valves closed notification"
     when
         $e: ValvesClosedEvent()
         $h: HydroelectricPowerPlant()
     then
+        AlarmService.addAlarm("Valves closed.", "low");
         System.out.println("Sending notification...");
 end

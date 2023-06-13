@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class RulesService {
 
     private final Database database;
-    private final KieSession ksessionCep;
+    private KieSession ksessionCep;
 
     @Autowired
     public RulesService(Database database) {

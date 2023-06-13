@@ -59,7 +59,7 @@ function Measurements(props) {
             lastMeasurement={lastMeasurement().electricityGenerated}
             currentMeasurement={currentMeasurement().electricityGenerated}
             title="Electricity generated"
-            unit="W"
+            unit="W/h"
             icon={FaBolt}
           />
           <div className="flex items-center p-4 bg-white rounded">

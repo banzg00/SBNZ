@@ -20,4 +20,8 @@ public class Turbine {
         this.on = on;
     }
 
+    public double getpowerGenerated() {
+        return waterFlow * 300;
+    }
+
 }

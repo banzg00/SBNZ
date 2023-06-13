@@ -50,4 +50,14 @@ public class HydroelectricPowerPlant {
         }
         return active;
     }
+
+    public int getPowerGenerated() {
+        int power = 0;
+        for (Turbine t : turbines) {
+            if (t.isOn()) {
+                power += t.getpowerGenerated();
+            }
+        }
+        return power;
+    }
 }

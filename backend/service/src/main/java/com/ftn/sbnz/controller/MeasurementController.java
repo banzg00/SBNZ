@@ -46,7 +46,7 @@ public class MeasurementController {
                 .waterTemp(measurement.getWaterTemp())
                 .waterSpeed(measurement.getWaterSpeed())
                 .windSpeed(measurement.getWindSpeed())
-                .electricityGenerated(1200)
+                .electricityGenerated(database.getHydroelectricPowerPlant().getPowerGenerated())
                 .turbinesActive(database.getHydroelectricPowerPlant().getActiveTurbines())
                 .build();
         this.template.convertAndSend("/topic/measurement", newMessage);

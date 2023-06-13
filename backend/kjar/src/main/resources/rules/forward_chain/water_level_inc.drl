@@ -8,6 +8,7 @@ import com.ftn.sbnz.model.events.TurbinePressureDecreasedEvent;
 import com.ftn.sbnz.model.events.ElectricityProductionDecreasedEvent;
 import com.ftn.sbnz.model.events.ValvesOpenedEvent;
 import com.ftn.sbnz.model.events.TurbineOnEvent;
+import com.ftn.sbnz.service.AlarmService;
 
 // TODO: 10 15 ... 80 85 -> okini pravila -> skripta krene da spusta -> 80 75 ... 20 15 -> i onda kontra pravila da se zatvore ventili ako je waterLVL na 20
 
@@ -49,20 +50,20 @@ rule "Valves opened"
         System.out.println("Valves opened. Water level will be decreased.");
 end
 
-// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
 rule "Turbine on notification"
     when
         $e: TurbineOnEvent()
         $h: HydroelectricPowerPlant()
     then
+        AlarmService.addAlarm("Turbine turned on.", "low");
         System.out.println("Sending notification...");
 end
 
-// TODO: PRAVILO ZA SLANJE NOTIFIKACIJE
 rule "Valves open notification"
     when
         $e: ValvesOpenedEvent()
         $h: HydroelectricPowerPlant()
     then
+        AlarmService.addAlarm("Valves opened.", "low");
         System.out.println("Sending notification...");
 end
