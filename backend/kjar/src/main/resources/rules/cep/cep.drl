@@ -131,6 +131,7 @@ no-loop true
         not (StopPowerPlant(hydroPowerPlantId == $hppId))
     then
         insert(new StopPowerPlant($hppId));
+        AlarmService.addAlarm("System stopped!", "medium");
         Database.appWorking = false;
         System.out.println("Serious alarm not resolved");
 end

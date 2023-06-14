@@ -22,6 +22,7 @@ const Home = () => {
     },
   ]);
   const [turbines, setTurbines] = useState([1]);
+  const [highAlarm, setHighAlarm] = useState();
 
   useEffect(() => {
     alarmService.getAlarms().then((response) => {
@@ -53,6 +54,7 @@ const Home = () => {
     };
     setAlarms((alarms) => [...alarms, alarm]);
     if (messageData.severity === "high") {
+      setHighAlarm(alarm);
       openModal();
     }
   };
@@ -99,7 +101,7 @@ const Home = () => {
       <PopupModal
         isOpen={modalOpen}
         onClose={closeModal}
-        description={lastAlarm()?.description}
+        description={highAlarm?.description}
         stopPowerPlant={stopPowerPlant}
       />
       <NavBar />

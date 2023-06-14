@@ -3,12 +3,10 @@ package com.ftn.sbnz.controller;
 import com.ftn.sbnz.dto.AlarmDTO;
 import com.ftn.sbnz.repository.Database;
 import com.ftn.sbnz.service.RulesService;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -32,13 +30,10 @@ public class AlarmController {
 
     @GetMapping("/alarms/resolved")
     public ResponseEntity<?> alarmResolved() {
+        if (!Database.appWorking) {
+            return ResponseEntity.badRequest().build();
+        }
         rulesService.alarmResolved();
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/alarms/notresolved")
-    public ResponseEntity<?> alarmNotResolved() {
-        rulesService.alarmNotResolved();
         return ResponseEntity.ok().build();
     }
 }
